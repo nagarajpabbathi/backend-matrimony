@@ -21,9 +21,11 @@ app.post('/getdata', mongoPractice.createBiodata);
 
 app.get('/getdata',async (req, res) => {
     let data = await Biodata.find();
-    
-   
     res.send(data);
+})
+
+app.get('/',(req, res) => {
+    res.send('working');
 
 })
 
