@@ -38,6 +38,7 @@ const createBiodata = async (req, res, next) => {
     })
     const result = await createdBiodata.save();
     console.log(result)
-    res.send({name:req.body.name, surname:req.body.name})
+    res.send(true)
+
 }
 exports.createBiodata = createBiodata;
