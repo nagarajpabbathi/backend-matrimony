@@ -8,7 +8,7 @@ mongoose.connect("mongodb+srv://nagarajpabbathi:Pabbathi123@testing.nej1j.mongod
     console.log('failed to connect')
 })
 
-const createBiodata = async (req, res, next) => {
+const createBiodata = async (req, res) => {
     console.log(req.body);
     const createdBiodata = new Biodata({
         name:     req.body.name,
