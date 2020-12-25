@@ -22,7 +22,7 @@ const biodataSchema = new mongoose.Schema({
     district: { type: String, required: true },
     pincode: { type: Number, required: true },
     photo1: { type: String, required: true },
-    photo2:{type:Number}
+    photo2:{type:String}
     
 })
 
