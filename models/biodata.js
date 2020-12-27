@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
-
+const mongoURI ='mongodb+srv://nagarajpabbathi:Pabbathi123@testing.nej1j.mongodb.net/nagaraju?retryWrites=true&w=majority' ;
+mongoose.connect(mongoURI,{useUnifiedTopology: true });
 const biodataSchema = new mongoose.Schema({
     name: { type: String, required: true },
     surname: { type: String, required: true },
     gender: { type: String, required: true },
-    dob: { type: Date, required: true },
+    dob: { type: String, required: true },
     tob: { type: String, required: true },
-    height: { type: Number, required: true },
+    height: { type: String, required: true },
     qualify: { type: String, required: true },
     jobDetails: { type: String, required: true },
     jobType: { type: String, required: true },
@@ -20,9 +21,11 @@ const biodataSchema = new mongoose.Schema({
     motheroccu: { type: String, required: true },
     sibilings: { type: String, required: true },
     district: { type: String, required: true },
-    pincode: { type: Number, required: true },
+    pincode: { type: String, required: true },
     photo1: { type: String, required: true },
-    photo2:{type:String}
+    photo2: { type: String },
+    search: { type: String },
+
     
 })
 
