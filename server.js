@@ -3,6 +3,8 @@ const express = require('express');
 const testmodule = require('./mongoose')
 const mongoose = require('mongoose')
 const Grid = require('gridfs-stream');
+const Biodata = require('./models/biodata');
+
 
 
 const app = express();
@@ -26,7 +28,19 @@ app.get('/',(req, res) => {
 
 app.get('/images/:key', testmodule.gfsrender);
 
-app.delete('/retrive/delete/:id',testmodule.deletegfs);
+app.delete('/retrive/delete/:id', testmodule.deletegfs);
+
+app.get('/getdata', async(req, res) => {
+    const data = await Biodata.find({}, (err, data) => {
+        if (err) {
+            res.send(err)
+        }
+        else {
+            res.send(data);
+        }
+    });
+ 
+})
  
 
   
