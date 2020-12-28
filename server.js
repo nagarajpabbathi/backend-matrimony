@@ -28,6 +28,8 @@ app.get('/',(req, res) => {
 
 app.get('/images/:key', testmodule.gfsrender);
 
+app.get('/imagesmall/:key', testmodule.resizerender);
+
 app.delete('/retrive/delete/:id', testmodule.deletegfs);
 
 app.get('/getdata', async(req, res) => {
