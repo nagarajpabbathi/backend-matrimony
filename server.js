@@ -33,7 +33,7 @@ app.get('/imagesmall/:key', testmodule.resizerender);
 app.delete('/retrive/delete/:id', testmodule.deletegfs);
 
 app.get('/getdata', async(req, res) => {
-    const data = await Biodata.find({},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1}, (err, data) => {
+    const data = await Biodata.find({},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1}, (err, data) => {
         if (err) {
             res.send(err)
         }
