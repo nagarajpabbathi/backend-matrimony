@@ -43,6 +43,19 @@ app.get('/getdata', async(req, res) => {
     });
  
 })
+app.get('/getdata/:search', async (req, res) => {
+    var search = req.params.search;
+    console.log(search);
+    const data = await Biodata.find({search:req.params.search}, (err, data) => {
+        if (err) {
+            res.send(err)
+        }
+        else {
+            res.send(data);
+        }
+    });
+ 
+})
  
 
   
