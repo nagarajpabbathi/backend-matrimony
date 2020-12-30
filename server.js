@@ -74,7 +74,7 @@ app.post("/signin", async (req, res,next) => {
         }
         else {
             if (data.password == password) {
-                res.json({ login: 'success',username:username,password:password });
+                res.json({ login: true,username:username,password:password });
            }
         }
     })
