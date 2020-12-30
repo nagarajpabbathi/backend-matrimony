@@ -7,7 +7,7 @@ const Biodata = require('./models/biodata');
 const signupUser = require('./usersroutes')
 const user = require('./models/user')
 var cors = require('cors')
-
+const token = "nagarajpabbathi";
 
 
 
@@ -62,7 +62,7 @@ app.post("/signin", async (req, res,next) => {
             }
             else {
                 if (data.password == password) {
-                    res.json({ login: 'success',username:username,password:password });
+                    res.json({ login: 'success',username:username,password:password,token:token });
                 }
             }
         })
@@ -74,7 +74,7 @@ app.post("/signin", async (req, res,next) => {
         }
         else {
             if (data.password == password) {
-                res.json({ login: true,username:username,password:password });
+                res.json({ login: true,username:username,password:password,token:token });
            }
         }
     })
