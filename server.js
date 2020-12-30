@@ -15,11 +15,7 @@ var cors = require('cors')
 const app = express();
 
 app.use(cors())
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-  });
+
  
 app.use(bodyParser.json());
 
@@ -62,25 +58,23 @@ app.post("/signin", async (req, res,next) => {
         const userslist = await user.findOne({ phone: phone }, (err, data) => {
             console.log(data)
             if (err||!data||data.length<=0) {
-                res.send("no phone found found")
+                res.json({ login: "no phone found found" })
             }
             else {
                 if (data.password == password) {
-                    res.send('success full logged in with phone');
+                    res.json({ login: 'success full logged in with phone' });
                 }
             }
         })
     }
     else {
         const userslist = await user.findOne({ username: username }, (err, data) => {
-            console.log(data)
-        if (err||data.length <= 0) {
-            res.send("no username match")
+            if (err || !data || data.length <= 0) {
+                res.json({ login: "no username match" });
         }
         else {
             if (data.password == password) {
-              
-               res.json({login:"successfully"})
+                res.json({ login: "successfully" });
            }
         }
     })
