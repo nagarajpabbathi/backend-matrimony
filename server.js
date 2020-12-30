@@ -4,6 +4,9 @@ const testmodule = require('./mongoose')
 const mongoose = require('mongoose')
 const Grid = require('gridfs-stream');
 const Biodata = require('./models/biodata');
+const signupUser = require('./usersroutes')
+const user = require('./models/user')
+
 
 
 
@@ -18,7 +21,7 @@ app.use('*', function(req, response, next) {
  });
 app.use(bodyParser.json());
 
-app.post('/getdata', testmodule.createBiodata)
+
 
 app.get('/',(req, res) => {
     res.send('working');
@@ -30,7 +33,7 @@ app.get('/images/:key', testmodule.gfsrender);
 
 app.get('/imagesmall/:key', testmodule.resizerender);
 
-app.delete('/retrive/delete/:id', testmodule.deletegfs);
+app.get('/delete/:id', testmodule.deletegfs);
 
 app.get('/getdata', async(req, res) => {
     const data = await Biodata.find({},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1}, (err, data) => {
@@ -43,6 +46,50 @@ app.get('/getdata', async(req, res) => {
     });
  
 })
+
+ 
+app.post("/signup", signupUser.postUsers)
+
+app.post("/signin", async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const phone = req.body.phone;
+    if (!username || username === "username")
+    {
+        const userslist = await user.findOne({phone:phone}, (err, data) => {
+            if (err||data.length<=0) {
+                res.send("no phone found found")
+            }
+            else {
+                if (data.password == password) {
+                    res.send('success full logged in with phone');
+                }
+            }
+        })
+    }
+    else {
+    const userslist = await user.findOne({username:username}, (err, data) => {
+        if (err||data.length <= 0) {
+            res.send("no username match")
+        }
+        else {
+            if (data.password == password) {
+               res.send('successfully logged in with username')
+           }
+        }
+    })
+   }
+})
+
+
+
+
+
+
+
+
+app.post('/getdata', testmodule.createBiodata);
+
 app.get('/getdata/:search', async (req, res) => {
     var search = req.params.search;
     console.log(search);
@@ -54,9 +101,6 @@ app.get('/getdata/:search', async (req, res) => {
             res.send(data);
         }
     });
- 
 })
- 
-
   
 app.listen(process.env.PORT || 8080, console.log('server running on port 5000'));

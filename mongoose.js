@@ -141,19 +141,29 @@ const resizerender = (req, res) => {
     });
 }
 
-const deletegfs =(req,res)=>{
+const deletegfs = async (req,res)=>{
     var filename = req.params.id;
-    gfs.remove({filename:filename, root:'uploads'},(err,data)=>{
-      if(err){
-        res.send(err)
+    await gfs.files.findOne({ filename: filename }, (err, file) => {
+        if (!file || file.length === 0) {
+            Biodata.deleteOne({photo1:filename},err=>{
+                if (err) {
+                res.send("photo deleted biodata not deleted");
+              }
+            })
+            res.send("no file to delete")
+        }
+        })
+   await gfs.remove({filename:filename, root:'uploads'},async(err,file)=>{
+      if(file.length===0||!file){
+        res.send("something went wrong")
       }
-      else{
-        Biodata.deleteOne({photo1:filename},err=>{
-          if(err){
-            res.send(err);
+      else {
+        await Biodata.deleteOne({photo1:filename},err=>{
+            if (err) {
+            res.send("photo deleted biodata not deleted");
           }
         })
-        res.redirect('/retrive/'+random)
+        res.send("successfully deleted")
       }
     })
 }
