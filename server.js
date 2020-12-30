@@ -62,7 +62,7 @@ app.post("/signin", async (req, res,next) => {
             }
             else {
                 if (data.password == password) {
-                    res.json({ login: 'success full logged in with phone' });
+                    res.json({ login: 'success',username:username,password:password });
                 }
             }
         })
@@ -74,7 +74,7 @@ app.post("/signin", async (req, res,next) => {
         }
         else {
             if (data.password == password) {
-                res.json({ login: "successfully" });
+                res.json({ login: 'success',username:username,password:password });
            }
         }
     })
