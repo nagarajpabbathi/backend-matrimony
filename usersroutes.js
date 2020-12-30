@@ -10,7 +10,7 @@ const postUsers = (req,res) => {
     })
     const result = createdUser.save().then((userfind) => {
         
-        res.send("successfully signup"+userfind)
+        res.send({user:'sign up success'+createdUser})
         
     })
         .catch((err) => {

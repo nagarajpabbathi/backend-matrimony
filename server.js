@@ -48,13 +48,15 @@ app.get('/getdata', async(req, res) => {
 app.post("/signup", signupUser.postUsers)
 
 app.post("/signin", async (req, res,next) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    const phone = req.body.phone;
+    const username = req.body.username||'';
+    const password = req.body.password||'';
+    const phone = req.body.phone || '';
+    console.log(username)
     if (!username || username === "username")
     {
-        const userslist = await user.findOne({phone:phone}, (err, data) => {
-            if (err||data.length<=0) {
+        const userslist = await user.findOne({ phone: phone }, (err, data) => {
+            console.log(data)
+            if (err||!data||data.length<=0) {
                 res.send("no phone found found")
             }
             else {
@@ -65,13 +67,15 @@ app.post("/signin", async (req, res,next) => {
         })
     }
     else {
-    const userslist = await user.findOne({username:username}, (err, data) => {
+        const userslist = await user.findOne({ username: username }, (err, data) => {
+            console.log(data)
         if (err||data.length <= 0) {
             res.send("no username match")
         }
         else {
             if (data.password == password) {
-               res.send('successfully logged in with username')
+              
+               res.json({login:"successfully"})
            }
         }
     })
