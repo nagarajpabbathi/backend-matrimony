@@ -15,6 +15,11 @@ var cors = require('cors')
 const app = express();
 
 app.use(cors())
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
  
 app.use(bodyParser.json());
 
@@ -32,7 +37,7 @@ app.get('/imagesmall/:key', testmodule.resizerender);
 
 app.get('/delete/:id', testmodule.deletegfs);
 
-app.get('/getdata', async(req, res) => {
+app.get('/getdata', async(req, res,next) => {
     const data = await Biodata.find({},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1}, (err, data) => {
         if (err) {
             res.send(err)
@@ -91,7 +96,7 @@ app.post("/signin", async (req, res,next) => {
 
 app.post('/getdata', testmodule.createBiodata);
 
-app.get('/getdata/:search', async (req, res) => {
+app.get('/getdata/:search', async (req, res,next) => {
     var search = req.params.search;
     console.log(search);
     const data = await Biodata.find({search:req.params.search}, (err, data) => {

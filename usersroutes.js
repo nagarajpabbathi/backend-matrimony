@@ -1,7 +1,7 @@
 const user = require('./models/user')
 
 
-const postUsers = (req,res) => {
+const postUsers = (req,res,next) => {
     const createdUser = new user({
         phone: req.body.phone,
         username: req.body.username,
