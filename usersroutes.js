@@ -10,23 +10,23 @@ const postUsers = (req,res) => {
     })
     const result = createdUser.save().then((userfind) => {
         
-        res.send({user:'sign up success'+createdUser})
+        res.json({user:'sign up success'+createdUser})
         
     })
         .catch((err) => {
             user.find({ username: req.body.username }, (err, data) => {
                 console.log(data)
                 if (data && data.length > 0) {
-                    res.send("username already exist")
+                    res.json({ user: "username already exist" })
                 }
                 else {
                     user.find({ phone: req.body.username }, (err, data) => {
                         console.log(data)
                         if (data && data.length > 0) {
-                            res.send("phone already exist")
+                            res.json({ user: "phone already exist" })
                         }
                         else {
-                            res.send('something went wrong try again')
+                            res.send({ user: 'something went wrong try again' })
                     }
                     })
                 }
