@@ -54,7 +54,7 @@ app.post("/signin", async (req, res,next) => {
     const phone = req.body.username || '';
     console.log(username)
     // if (!username || username === "username")
-     {
+    var temp = true;
         const userslist = await user.findOne({ phone: phone }, (err, data) => {
             console.log(data)
         
@@ -62,6 +62,7 @@ app.post("/signin", async (req, res,next) => {
                // res.json({ login: false,description:"Phone no not exists.."  })
             }
             else {
+                temp = false;
                 if (data.password == password) {
                     res.json({ login: true,username:username,password:password,token:token,paid:data.paid });
                 }
@@ -71,11 +72,10 @@ app.post("/signin", async (req, res,next) => {
                 }
             }
         })
-    }
+    
    // else {
-         userslist = await user.findOne({ username: username }, (err, data) => {
+       temp&&( userslist = await user.findOne({ username: username }, (err, data) => {
             if (err || !data || data.length <= 0) {
-
                 res.json({ login: false,description:"Username not exists.." });
         }
         else {
@@ -83,11 +83,11 @@ app.post("/signin", async (req, res,next) => {
                 res.json({ login: true,username:username,password:password,token:token,paid:data.paid });
                 }
                 else {
-                    res.json({ login: false,description:'Invalid password'});
+                    res.json({ login: false,description:'Invalid password..'});
 
                 }
         }
-    })
+    }))
   // }
 })
 
