@@ -59,11 +59,11 @@ app.post("/signin", async (req, res,next) => {
             console.log(data)
         
             if (err||!data||data.length<=0) {
-                res.json({ login: "no phone found found" })
+                res.json({ login: false,description:"Phone no not exists.."  })
             }
             else {
                 if (data.password == password) {
-                    res.json({ login: 'success',username:username,password:password,token:token,paid:data.paid });
+                    res.json({ login: true,username:username,password:password,token:token,paid:data.paid });
                 }
             }
         })
@@ -71,7 +71,7 @@ app.post("/signin", async (req, res,next) => {
     else {
         const userslist = await user.findOne({ username: username }, (err, data) => {
             if (err || !data || data.length <= 0) {
-                res.json({ login: "no username match" });
+                res.json({ login: false,description:"Username not exists.." });
         }
         else {
             if (data.password == password) {
