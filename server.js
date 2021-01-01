@@ -57,6 +57,7 @@ app.post("/signin", async (req, res,next) => {
     {
         const userslist = await user.findOne({ phone: phone }, (err, data) => {
             console.log(data)
+        
             if (err||!data||data.length<=0) {
                 res.json({ login: "no phone found found" })
             }
@@ -74,7 +75,7 @@ app.post("/signin", async (req, res,next) => {
         }
         else {
             if (data.password == password) {
-                res.json({ login: true,username:username,password:password,token:token });
+                res.json({ login: true,username:username,password:password,token:token,paid:data.paid });
            }
         }
     })
