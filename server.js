@@ -62,7 +62,7 @@ app.post("/signin", async (req, res,next) => {
             }
             else {
                 if (data.password == password) {
-                    res.json({ login: 'success',username:username,password:password,token:token });
+                    res.json({ login: 'success',username:username,password:password,token:token,paid:data.paid });
                 }
             }
         })
@@ -90,17 +90,37 @@ app.post("/signin", async (req, res,next) => {
 
 app.post('/getdata', testmodule.createBiodata);
 
-app.post('/getdata/:search', async (req, res,next) => {
+app.post('/getdata/:search', async (req, res, next) => {
+    ///checking user paid or not
+    //console.log(req.body)
+    const userslist = await user.findOne({ username:req.body.username}, async(err, data) => {
+        if (err || !data || data.length <= 0) {
+            res.json({ paid: false });
+            }
+        else {
+            console.log(data)
+            if (data.password == req.body.password && data.paid) {
+                const data = await Biodata.find({search:req.params.search}, (err, data) => {
+                    if (err) {
+                        res.send(err)
+                    }
+                    else {
+                        res.send(data);
+                    }
+                }); 
+            }
+            else {
+                res.send([true]);
+    
+            }
+        }
+       
+})
+
+
     var search = req.params.search;
     console.log(search);
-    const data = await Biodata.find({search:req.params.search}, (err, data) => {
-        if (err) {
-            res.send(err)
-        }
-        else {
-            res.send(data);
-        }
-    });
+    
 })
   
 app.listen(process.env.PORT || 8080, console.log('server running on port 5000'));

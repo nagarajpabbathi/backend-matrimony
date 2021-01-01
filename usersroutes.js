@@ -6,6 +6,7 @@ const postUsers = (req,res,next) => {
         phone: req.body.phone,
         username: req.body.username,
         password: req.body.password,
+       // paid:req.body.paid,
         wishlist:['nagaraj','pabbathi','arjun']
     })
     const result = createdUser.save().then((userfind) => {
