@@ -90,7 +90,7 @@ app.post("/signin", async (req, res,next) => {
 
 app.post('/getdata', testmodule.createBiodata);
 
-app.get('/getdata/:search', async (req, res,next) => {
+app.post('/getdata/:search', async (req, res,next) => {
     var search = req.params.search;
     console.log(search);
     const data = await Biodata.find({search:req.params.search}, (err, data) => {
