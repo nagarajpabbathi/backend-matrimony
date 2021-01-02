@@ -33,15 +33,15 @@ app.get('/imagesmall/:key', testmodule.resizerender);
 
 app.get('/delete/:id', testmodule.deletegfs);
 
-app.get('/getdata:searchid', async (req, res, next) => {
+app.get('/getdata/:searchid', async (req, res, next) => {
     let searchid = req.params.searchid;
-    const data = await Biodata.findOne({ searchid: searchid }, { "name": 1, "qualify": 1, "dob": 1, "district": 1, "photo1": 1, "search": 1, "caste": 1,"searchid":1 }, (err, data) => {
+    const data = await Biodata.findOne({ search: searchid }, { "name": 1, "qualify": 1, "dob": 1, "district": 1, "photo1": 1, "search": 1, "caste": 1,"searchid":1 }, (err, data) => {
         console.log(data);
         if (err) {
-            res.send(err)
+            res.send({data:false})
         }
         else {
-            res.send(data);
+            res.json({data:data});
         }
     });
 })
