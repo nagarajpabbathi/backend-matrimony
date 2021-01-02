@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     paid: { type: Boolean, default: 0, required: false },
-    wishlist:{type:Array,required:false}
+    wishlist:{type:Array,required:false},
+    searchkey:{type:String,required:false}
 })
 
 module.exports = mongoose.model('userlist', userSchema)
