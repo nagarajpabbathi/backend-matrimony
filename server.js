@@ -213,7 +213,7 @@ app.post('/razorverify', async (req, res) => {
     const header = req.headers['x-razorpay-signature']
     if (header == digest) {
         const createdRazor = new razor({
-            data: JSON.stringify(req.body)
+            data: req.body.payload.payment.entity.notes.username
         })
         await createdRazor.save();
     }
