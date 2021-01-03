@@ -219,15 +219,11 @@ app.post('/razorverify', async (req, res) => {
         const username = req.body.payload.payment.entity.notes.username;
         await createdRazor.save();
 
-        const userslist = await user.findOne({ username:username}, async(err, data) => {
-            if (err) {
-                res.json({ err:err });
-                }
-            else {
-                await userslist.updateOne({paid:true});
-
+        const userslist = await user.findOne({ username:username})
+        if (userslist) {
+              await userslist.updateOne({paid:true});
             }      
-    }) 
+    
     }
    
     
