@@ -9,7 +9,6 @@ const user = require('./models/user')
 const cors = require('cors')
 const Razorpay = require('razorpay')
 const Shortid = require('shortid');
-const shortid = require('shortid');
 const token = "nagarajpabbathi";
 const razor= require('./models/razor');
 const { json } = require('body-parser');
@@ -206,11 +205,19 @@ app.post('/razorpay', async (req, res) => {
     })
 })
 app.post('/razorverify', async (req, res) => {
-    const verification = 'nagaraj'
-    const createdRazor = new razor({
-        data: JSON.stringify(req.body)
-    })
-    await createdRazor.save();
+    const secret = 'nagaraj'
+    const crypto = require('crypto');
+    const shasum = crypto.createHmac('sha256', secret);
+    shasum.update(JSON.stringify(req.body))
+    const digest = shasum.digest('hex')
+    const header = req.headers['x-razorpay-signature']
+    if (header == digest) {
+        const createdRazor = new razor({
+            data: JSON.stringify(req.body)
+        })
+        await createdRazor.save();
+    }
+   
     
     res.json({status:'ok'})
 })
