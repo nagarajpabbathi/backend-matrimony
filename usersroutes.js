@@ -10,7 +10,7 @@ const postUsers = (req,res,next) => {
         wishlist:[]
     })
         createdUser.save().then(() => {
-        res.json({user:'sign up success',userinfo:createdUser}) 
+        res.json({user:true,userinfo:createdUser}) 
     })
         .catch((err) => {
             user.find({ username: req.body.username }, (err, data) => {
