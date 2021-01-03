@@ -6,10 +6,16 @@ const Grid = require('gridfs-stream');
 const Biodata = require('./models/biodata');
 const signupUser = require('./usersroutes')
 const user = require('./models/user')
-var cors = require('cors')
+const cors = require('cors')
+const Razorpay = require('razorpay')
+const Shortid = require('shortid');
+const shortid = require('shortid');
 const token = "nagarajpabbathi";
 
-
+const razorpay = new Razorpay({
+    key_id: 'rzp_test_FKkGjC4beuFZKo',
+    key_secret: 'QWUE8m7ulpGWeMmLIdDIY00n'
+  })
 
 
 const app = express();
@@ -57,7 +63,7 @@ app.get('/getdata', async(req, res,next) => {
 })
 
 app.post('/addtowishlist', async (req, res) => {
-    let searchid = req.body.searchid;
+    let searchid = req.body.searchid.toString();
     let username = req.body.username;
     let method = req.body.method;
     const getuser = await user.findOne({ username: username });
@@ -177,5 +183,26 @@ app.post('/getdata/:search', async (req, res, next) => {
 }) 
 })
 
+app.post('/razorpay', async (req, res) => {
+    const payment_capture = 1
+    const amount = '300000'  
+    const currency = 'INR'
+    const receipt = Shortid.generate()
+    const options = {
+        amount,
+        currency,
+        receipt,
+        payment_capture
+    }
+    const response = await razorpay.orders.create(options)
+    console.log(response);
+    res.json({
+        id: response.id,
+        currency: 'INR',
+        amount: response.amount,
+        
+    })
+
+})
   
 app.listen(process.env.PORT || 8080, console.log('server running on port 5000'));
