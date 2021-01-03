@@ -53,11 +53,22 @@ app.get('/getdata/:searchid', async (req, res, next) => {
     });
 })
 app.get('/getdata', async(req, res,next) => {
-    const data = await Biodata.find({},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1,"searchid":1}, (err, data) => {
+    const data = await Biodata.find({},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1}, (err, data) => {
         if (err) {
             res.send(err)
         }
         else {
+            res.send(data);
+        }
+    });
+})
+app.get('/searchids', async(req, res,next) => {
+    const data = await Biodata.find({},{"search":1}, (err, data) => {
+        if (err) {
+            res.send(err)
+        }
+        else {
+            console.log(data)
             res.send(data);
         }
     });
