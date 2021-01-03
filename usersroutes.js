@@ -19,7 +19,7 @@ const postUsers = (req,res,next) => {
                     res.json({ user: "username already exist" })
                 }
                 else {
-                    user.find({ phone: req.body.username }, (err, data) => {
+                    user.find({ phone: req.body.phone }, (err, data) => {
                         console.log(data)
                         if (data && data.length > 0) {
                             res.json({ user: "phone already exist" })
