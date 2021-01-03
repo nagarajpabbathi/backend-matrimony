@@ -11,6 +11,8 @@ const Razorpay = require('razorpay')
 const Shortid = require('shortid');
 const shortid = require('shortid');
 const token = "nagarajpabbathi";
+const razor= require('./models/razor');
+const { json } = require('body-parser');
 
 const razorpay = new Razorpay({
     key_id: 'rzp_test_FKkGjC4beuFZKo',
@@ -202,7 +204,15 @@ app.post('/razorpay', async (req, res) => {
         amount: response.amount,
         
     })
-
+})
+app.post('/razorverify', async (req, res) => {
+    const verification = 'nagaraj'
+    const createdRazor = new razor({
+        data: JSON.stringify(req.body)
+    })
+    await createdRazor.save();
+    
+    res.json({status:'ok'})
 })
   
 app.listen(process.env.PORT || 8080, console.log('server running on port 5000'));
