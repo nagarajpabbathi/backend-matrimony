@@ -77,6 +77,7 @@ const createBiodata = async (req, res, next) => {
                 pincode: req.body.pincode,
                 qualifyType: req.body.qualifyType,
                 phone:req.body.phone,
+                username:req.body.username,
                 photo1: req.files.file[0].filename,
                 photo2: 'none',
                 search: "none"
