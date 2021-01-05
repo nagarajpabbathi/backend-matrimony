@@ -75,11 +75,13 @@ const createBiodata = async (req, res, next) => {
                 sibilings: req.body.sibilings,
                 district: req.body.district,
                 pincode: req.body.pincode,
+                qualifyType: req.body.qualifyType,
+                phone:req.body.phone,
                 photo1: req.files.file[0].filename,
                 photo2: 'none',
                 search: "none"
             });
-            var search = req.body.gender.substring(0, 1) + req.body.qualify.substring(0, 2) + req.body.caste.substring(0, 2) + req.body.jobtype.substring(0, 1) + req.body.dob.substring(0, 4) 
+            var search = req.body.gender.substring(0, 1) + req.body.qualifyType.substring(0, 2) + req.body.caste.substring(0, 2) + req.body.jobtype.substring(0, 1) + req.body.dob.substring(0, 4) 
             + req.body.height.substring(0, 1) +req.body.height.substring(2, 4) +
                 req.body.surname.substring(0, 1) + req.body.name.substring(0, 2);
                 createdBiodata.search = search;

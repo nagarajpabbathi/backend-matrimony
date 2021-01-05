@@ -9,6 +9,7 @@ const biodataSchema = new mongoose.Schema({
     tob: { type: String, required: true },
     height: { type: String, required: true },
     qualify: { type: String, required: true },
+    qualifyType: { type: String, required: true },
     jobDetails: { type: String, required: true },
     jobType: { type: String, required: true },
     company: { type: String, required: true },
@@ -24,9 +25,9 @@ const biodataSchema = new mongoose.Schema({
     pincode: { type: String, required: true },
     photo1: { type: String, required: true },
     photo2: { type: String },
-    search: { type: String },
-
-    
+    search: { type: String, required:true},
+    phone: { type: String, required:true},
+    username: { type: String},  
 })
 
 module.exports=mongoose.model('biodata',biodataSchema)
