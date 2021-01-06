@@ -6,6 +6,8 @@ const GridFsStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
 const Biodata = require('./models/biodata');
 const sharp = require('sharp');
+const user = require('./models/user')
+
 
 
 
