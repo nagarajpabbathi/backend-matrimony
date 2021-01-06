@@ -14,8 +14,8 @@ const razor= require('./models/razor');
 const { json } = require('body-parser');
 
 const razorpay = new Razorpay({
-    key_id: 'rzp_test_FKkGjC4beuFZKo',
-    key_secret: 'QWUE8m7ulpGWeMmLIdDIY00n'
+    key_id: 'rzp_live_r8t2KbUTPTN0OU',
+    key_secret: 'lSB2dwAoc5I1y37YJjxqd8SI'
   })
 
 
