@@ -49,7 +49,7 @@ const upload = multer({ storage }).fields([
 
 const createBiodata = async (req, res, next) => {
     console.log(req.body)
-    upload(req, res, err => {
+    upload(req, res, async err => {
         if (err) {
             console.log(err)
         }
@@ -93,6 +93,12 @@ const createBiodata = async (req, res, next) => {
             }
                 else {
                     const result = createdBiodata.save();
+                    const getuser = await user.findOne({ username: req.body.username });
+                    if (getuser) {
+                        const update = { searchkey: search };
+                        await getuser.updateOne(update);
+                     }
+
                     res.send(true)
             }
         }
