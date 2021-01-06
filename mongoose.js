@@ -96,7 +96,7 @@ const createBiodata = async (req, res, next) => {
                         await getuser.updateOne(update);
                      }
                     const result = createdBiodata.save();
-                    res.send(true)
+                    res.json({res:true,search:search})
             }
                 else {
                     const result = createdBiodata.save();
@@ -106,8 +106,8 @@ const createBiodata = async (req, res, next) => {
                         await getuser.updateOne(update);
                      }
 
-                    res.send(true)
-            }
+                     res.json({res:true,search:search})
+                    }
         }
     })
    
