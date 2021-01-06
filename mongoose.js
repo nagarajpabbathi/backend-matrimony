@@ -88,6 +88,11 @@ const createBiodata = async (req, res, next) => {
                 createdBiodata.search = search;
                 if ((req.files.file2)) {
                     createdBiodata.photo2 = req.files.file2[0].filename;
+                    const getuser = await user.findOne({ username: req.body.username });
+                    if (getuser) {
+                        const update = { searchkey: search };
+                        await getuser.updateOne(update);
+                     }
                     const result = createdBiodata.save();
                     res.send(true)
             }
