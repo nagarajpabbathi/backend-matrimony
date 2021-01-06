@@ -171,7 +171,7 @@ app.post('/getdata', testmodule.createBiodata);
 app.post('/getdata/:search', async (req, res, next) => {
     ///checking user paid or not
     //console.log(req.body)
-    const userslist = await user.findOne({ username:req.body.username}, async(err, data) => {
+    const userslist = await user.findOne({ username:req.body.username},{'phone':0,'surname':0} ,async(err, data) => {
         if (err || !data || data.length <= 0) {
             res.json({ paid: false });
             }
