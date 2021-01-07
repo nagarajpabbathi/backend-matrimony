@@ -139,7 +139,7 @@ app.post("/signin", async (req, res,next) => {
             else {
                 temp = false;
                 if (data.password == password) {
-                    res.json({ login: true,username:username,phone:data.phone,password:password,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||false });
+                    res.json({ login: true,username:data.username,phone:data.phone,password:password,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||false });
                 }
                 else {
                     res.json({ login: false,description:'Invalid password'});
@@ -155,7 +155,7 @@ app.post("/signin", async (req, res,next) => {
         }
         else {
             if (data.password == password) {
-                res.json({ login: true,username:username,password:password,token:token,paid:data.paid,wishlist:data.wishlist });
+                res.json({ login: true,username:data.username,password:password,phone:data.phone,token:token,paid:data.paid,wishlist:data.wishlist });
                 }
                 else {
                     res.json({ login: false,description:'Invalid password..'});
@@ -228,12 +228,11 @@ app.post('/razorverify', async (req, res) => {
         })
 
         const username = req.body.payload.payment.entity.notes.username;
+        const userslist = await user.findOne({ username: username })
+        await userslist.updateOne({paid:true});
         await createdRazor.save();
 
-        const userslist = await user.findOne({ username:username})
-        if (userslist) {
-              await userslist.updateOne({paid:true});
-            }      
+           
     
     }
    
