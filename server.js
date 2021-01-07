@@ -197,7 +197,7 @@ app.post('/getdata/:search', async (req, res, next) => {
 
 app.post('/razorpay', async (req, res) => {
     const payment_capture = 1
-    const amount = '100'  
+    const amount = '300000'  
     const currency = 'INR'
     const receipt = Shortid.generate()
     const options = {
