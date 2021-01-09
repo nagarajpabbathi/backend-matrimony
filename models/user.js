@@ -5,9 +5,12 @@ const userSchema = new mongoose.Schema({
     phone: { type:String, required:true, unique:true},
     username: { type:String, required:true, unique:true },
     password: { type:String, required:true },
-    paid: { type:Boolean, default: 0,  },
-    wishlist:{type:Array,},
-    searchkey:{type:String,}
+    paid: { type: Boolean, default:0,  },
+    wishlist: { type: Array, default:[]},
+    myrequests: { type: Array, default: [] },
+    myaccepts: { type: Array, default: [] },
+    myrejects:{type:Array,default:[]},
+    searchkey: { type: String, default: [] },
 })
 
 module.exports = mongoose.model('userlist', userSchema)
