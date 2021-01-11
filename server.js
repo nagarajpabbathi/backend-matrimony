@@ -155,7 +155,7 @@ app.post("/signin", async (req, res,next) => {
         }
         else {
             if (data.password == password) {
-                res.json({ login: true,username:data.username,password:password,phone:data.phone,token:token,paid:data.paid,wishlist:data.wishlist });
+                res.json({ login: true,username:data.username,password:password,phone:data.phone,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||false  });
                 }
                 else {
                     res.json({ login: false,description:'Invalid password..'});
