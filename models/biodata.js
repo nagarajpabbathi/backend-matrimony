@@ -28,7 +28,8 @@ const biodataSchema = new mongoose.Schema({
     search: { type: String, required:true},
     phone: { type: String, required:true},
     username: { type: String },  
-    makemyprofile:{type:Boolean,default:0}
+    makemyprofile:{type:Boolean,default:0},
+    verified:{type:Boolean,default:0}
 })
 
 module.exports=mongoose.model('biodata',biodataSchema)

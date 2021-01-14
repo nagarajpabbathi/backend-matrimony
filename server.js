@@ -12,6 +12,7 @@ const Shortid = require('shortid');
 const token = "nagarajpabbathi";
 const razor= require('./models/razor');
 const { json } = require('body-parser');
+const { update } = require('./models/user');
 
 const razorpay = new Razorpay({
     key_id: 'rzp_live_r8t2KbUTPTN0OU',
@@ -52,8 +53,10 @@ app.get('/getdata/:searchid', async (req, res, next) => {
         }
     });
 })
+
+
 app.get('/getdata', async(req, res,next) => {
-    const data = await Biodata.find({},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1}, (err, data) => {
+    const data = await Biodata.find({verified:true},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1}, (err, data) => {
         if (err) {
             res.send(err)
         }
@@ -62,6 +65,38 @@ app.get('/getdata', async(req, res,next) => {
         }
     });
 })
+////////////////////verifications//////////////////////
+app.get('/verify', async(req, res,next) => {
+    const data = await Biodata.find({verified:false}).then(async (data) => {
+        res.send(data)
+    }).catch((err) => {
+        console.log(err);
+        res.send(err);
+    })
+    res.send('server error') 
+})
+
+
+app.post('/verify/:searchid', async (req, res) => {
+    const searchid = req.params.searchid;
+    const username = req.body.username;
+    const password = req.body.password;
+    if (username == 'nagrajpabbathi' && password == 'pabbathi143') {
+        const updateData = await Biodata.findOne({ verified: false,search:searchid }).then(async (data) => {
+            const update = data;
+            update.verified = true;
+            await data.updateOne(update);
+            res.send('updated successfully.')
+
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    else {
+        res.send('invalid credintials..')
+    }})
+///////////////////////////verification end///////////////////////
+
 app.get('/searchids', async(req, res,next) => {
     const data = await Biodata.find({},{"search":1}, (err, data) => {
         if (err) {
