@@ -121,6 +121,23 @@ app.post('/addtowishlist', async (req, res) => {
     }
    
 })
+
+
+app.get('/limit/:username', async (req, res) => {
+    let username = req.body.username;
+    const todaylist = await user.findOne({ username: username }, (err, data) => {
+        let date = new Date();
+        let checkdate=[];
+        checkdate.push(date.getMonth());
+        checkdate.push(date.getDate());
+        console.log(checkdate);
+        // if (data.checkdate === Date.now()) {
+        //     res.json({todayViewed:data.todayViewed}) 
+        // }
+        res.send(true);
+    })
+})
+
 app.post("/signup", signupUser.postUsers)
 
 app.post("/signin", async (req, res,next) => {
