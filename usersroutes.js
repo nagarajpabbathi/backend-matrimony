@@ -25,7 +25,7 @@ const postUsers = (req,res,next) => {
                             res.json({ user: "phone already exist" })
                         }
                         else {
-                            res.send({ user: 'something went wrong try again' })
+                            res.send({ user: 'something went wrong try after sometime..' })
                     }
                     })
                 }
