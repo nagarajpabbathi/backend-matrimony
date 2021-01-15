@@ -133,12 +133,12 @@ const gfsrender = (req, res) => {
             //     err: 'no file exist'
             // });
             console.log('no image found')
-            res.sendFile('noImageFound.jpg', { root: path.join(__dirname, '../public/images') });
+            res.sendFile('noImageFound.jpg');
         }
         else {
             if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
                 const readstream = gfs.createReadStream(file.filename);
-                var resizeTransform = sharp().resize(400);
+                var resizeTransform = sharp().resize(500);
                 readstream.pipe(resizeTransform).pipe(res);
                 //readstream.pipe(res);
             }
