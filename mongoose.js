@@ -138,9 +138,9 @@ const gfsrender = (req, res) => {
         else {
             if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
                 const readstream = gfs.createReadStream(file.filename);
-               // var resizeTransform = sharp().resize(200);
-               // readstream.pipe(resizeTransform).pipe(res);
-                readstream.pipe(res);
+                var resizeTransform = sharp().resize(400);
+                readstream.pipe(resizeTransform).pipe(res);
+                //readstream.pipe(res);
             }
         }
     });
