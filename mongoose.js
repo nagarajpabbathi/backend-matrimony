@@ -123,6 +123,9 @@ const createBiodata = async (req, res, next) => {
 }
 
 const gfsrender = (req, res) => {
+    if (req.params.key == 'aldjl') {
+        res.send(true)
+    }
     gfs.files.findOne({ filename: req.params.key }, (err, file) => {
         //checking files
         if (!file || file.length === 0) {
