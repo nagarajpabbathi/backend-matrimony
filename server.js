@@ -77,11 +77,11 @@ app.get('/verify', async(req, res,next) => {
 })
 
 
-app.post('/verify/:searchid', async (req, res) => {
+app.get('/verify/:searchid', async (req, res) => {
     const searchid = req.params.searchid;
-    const username = req.body.username;
-    const password = req.body.password;
-    if (username == 'nagrajpabbathi' && password == 'pabbathi143') {
+    // const username = req.body.username;
+    // const password = req.body.password;
+    if (username == 'nagrajpabbathi' && password == 'pabbathi143' || 1) {
         const updateData = await Biodata.findOne({ verified: false,search:searchid }).then(async (data) => {
             const update = data;
             update.verified = true;
