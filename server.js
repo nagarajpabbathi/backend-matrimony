@@ -79,11 +79,14 @@ app.get('/verify', async(req, res,next) => {
 
 app.get('/verify/:searchid', async (req, res) => {
     const searchid = req.params.searchid;
+    console.log(searchid)
+    var username, password;
     // const username = req.body.username;
     // const password = req.body.password;
     if (username == 'nagrajpabbathi' && password == 'pabbathi143' || 1) {
         const updateData = await Biodata.findOne({ verified: false,search:searchid }).then(async (data) => {
             const update = data;
+            console.log(data)
             update.verified = true;
             await data.updateOne(update);
             res.send('updated successfully.')
