@@ -114,34 +114,55 @@ const createBiodata = async (req, res, next) => {
         }
     })
 }
-   
-  
+const updateBiodata = async (req, res, next) => {
+    const searchid = req.params.searchid;
+    const updatedData = req.body.updatedData;
+    await Biodata.findOne({ search: searchid }, async(err, data) => {
+        if (err) {
+            res.send('try again later');
+        }
+        else {
+            if (data) {
+               await data.updateOne(updatedData);
+                res.send('successfully updated..')
+            }
+            else {
+                res.send('invalid search id..')
+            }
+        }
+    })
+}
+    
 const updatePhoto = async (req, res, next) => {
     console.log(req.body)
-    const searchid = req.params.searchid;
-    const username = req.body.username;
-    const password = req.body.password;
-    if (username == 'username' && password == 'password') {
+
+
         upload(req, res, async err => {
             if (err) {
                 console.log(err)
             }
             else {
+                const searchid = req.params.searchid;
+                const username = req.body.username;
+                const password = req.body.password;
+                if (username == 'username' && password == 'password') { 
                 const biodata = await Biodata.findOne({ search: searchid });
                 console.log(biodata)
-                let update = biodata;
-                update.photo1 = req.files.file[0].filename;
+                    let update = biodata;
+                    update.photo1 = req.files.file[0].filename;
                 if ((req.files.file2)) {
                     update.photo2 = req.files.file2[0].filename;
                 }
                 await biodata.updateOne(update);
                 res.json({ res: true, des: 'successfully updated' })
+                }
+                else {
+                    res.send('invalid credentials')
+                }
             }
         })
-    }
-    else {
-        res.send('invalid credentials')
-    }
+    
+  
 }
 
 const gfsrender = (req, res) => {
@@ -263,5 +284,26 @@ const deletegfsimg = async (req, res) => {
         }) 
     }
 }
+const deletegfsimage = async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const filename = req.params.filename;
+    if (username == 'username' && password == 'password') {
+        await gfs.remove({ filename: filename, root: 'uploads' }, async (err, file) => {
+            console.log(file)
+            if (!file) {
+                res.send("no file found")
+            }
+            else {
+                res.send("successfully deleted")
+            }
 
-module.exports={createBiodata,upload,gfsrender,deletegfs,resizerender,deletegfsimg,updatePhoto}
+        })
+    }
+   }
+
+module.exports = {
+    createBiodata, upload, gfsrender, deletegfs,
+    resizerender, deletegfsimg, updatePhoto, deletegfsimage,
+    updateBiodata
+}

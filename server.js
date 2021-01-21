@@ -331,7 +331,7 @@ app.post('/activate/:phone', async (req, res, next) => {
 /////////////////////////////////////////////////////////////////////
 
 //////////////NOT VERIFIED PROFILES///////////////////////////////
-app.post('/verify', async (req, res, next) => {
+app.post('/notverified', async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
     if (username == 'username' && password == 'password') {
@@ -344,6 +344,19 @@ app.post('/verify', async (req, res, next) => {
     }
 })
 ////////////////////////////////////////////////////////////////////
+
+///////////////////////NOT VERIFIED GETDATA///////////////////////////
+app.get('/ngetdata', async(req, res,next) => {
+    const data = await Biodata.find({verified:false},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1}, (err, data) => {
+        if (err) {
+            res.send(err)
+        }
+        else {
+            res.send(data);
+        }
+    });
+})
+////////////////////////////////////////////////////////////
 
 /////////////////////////MAKE VERIFY///////////////////////////////
 app.post('/verify/:searchid', async (req, res) => {
@@ -393,8 +406,65 @@ app.post('/delete/:searchid', testmodule.deletegfs);
 app.post('/deleteimg/:searchid', testmodule.deletegfsimg);
 ////////////////////////////////////////////////
 
+///////////////DELETE BY FILENAME//////////////////////////
+app.post('/deleteimage/:filename', testmodule.deletegfsimage);
+/////////////////////////////////////////////////////
+
 //////////////////////UPDATE PHOTO///////////////////////////////////
-app.post('/updatephoto/:serchid',testmodule.updatePhoto)
+app.post('/updatephoto/:searchid',testmodule.updatePhoto)
 /////////////////////////////////////////////////////////////////////
+
+///////////////////////////GET DATA//////////////////////////////////
+app.post('/getbiodata/:searchid',async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const searchid = req.params.searchid;
+    if (username == 'username' && password == 'password') {
+        await Biodata.findOne({search:searchid}, (err, data) => {
+            if (err) {
+                res.send('try again something went wrong');
+            }
+            else {
+                if (data) {
+                    res.send(data);
+                }
+                else {
+                    res.send('invalid search id');
+                }
+            }
+      })
+    }
+})
+
+//////////////////////UPDATE BIODATA///////////////////////////////////
+app.post('/updatebiodata/:searchid',testmodule.updateBiodata)
+/////////////////////////////////////////////////////////////////////
+app.post('/driveadd/:searchid',async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const searchid = req.params.searchid;
+    const driveurl = req.body.driveurl;
+    let driveid;
+    const trim = driveurl.slice(32, driveurl.length)
+   let index = trim.indexOf('/')
+    driveid= trim.slice(0,index)
+
+    if (username == 'username' && password == 'password') {
+        await Biodata.findOne({search:searchid}, async(err, data) => {
+            if (err) {
+                res.send('try again something went wrong');
+            }
+            else {
+                if (data) {
+                    await data.updateOne({ driveimg: driveid,drive:true });
+                    res.send('drive id successfully updated');
+                }
+                else {
+                    res.send('invalid search id');
+                }
+            }
+      })
+    }
+})
   
 app.listen(process.env.PORT || 8080, console.log('server running on port 5000'));
