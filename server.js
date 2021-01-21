@@ -24,8 +24,8 @@ const app = express();
 
 app.use(cors())
 
- 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({  extended: true})); 
 
 
 
@@ -39,7 +39,7 @@ app.get('/images/:key', testmodule.gfsrender);
 
 app.get('/imagesmall/:key', testmodule.resizerender);
 
-app.get('/delete/:id', testmodule.deletegfs);
+
 
 app.get('/getdata/:searchid', async (req, res, next) => {
     let searchid = req.params.searchid;
@@ -65,40 +65,7 @@ app.get('/getdata', async(req, res,next) => {
         }
     });
 })
-////////////////////verifications//////////////////////
-app.get('/verify', async(req, res,next) => {
-    const data = await Biodata.find({verified:false}).then(async (data) => {
-        res.send(data)
-    }).catch((err) => {
-        console.log(err);
-        res.send(err);
-    })
-    res.send('server error') 
-})
 
-
-app.get('/verify/:searchid', async (req, res) => {
-    const searchid = req.params.searchid;
-    console.log(searchid)
-    var username, password;
-    // const username = req.body.username;
-    // const password = req.body.password;
-    if (username == 'nagrajpabbathi' && password == 'pabbathi143' || 1) {
-        const updateData = await Biodata.findOne({ verified: false,search:searchid }).then(async (data) => {
-            const update = data;
-            console.log(data)
-            update.verified = true;
-            await data.updateOne(update);
-            res.send('updated successfully.')
-
-        }).catch((err) => {
-            console.log(err);
-        })
-    }
-    else {
-        res.send('invalid credintials..')
-    }})
-///////////////////////////verification end///////////////////////
 
 app.get('/searchids', async(req, res,next) => {
     const data = await Biodata.find({},{"search":1}, (err, data) => {
@@ -285,14 +252,149 @@ app.post('/razorverify', async (req, res) => {
         const username = req.body.payload.payment.entity.notes.username;
         const userslist = await user.findOne({ username: username })
         await userslist.updateOne({paid:true});
-        await createdRazor.save();
-
-           
-    
-    }
-   
-    
+        await createdRazor.save(); 
+    }  
     res.json({status:'ok'})
 })
+/////////////////////////managing routes/////////////////
+////////////view all profiles////////////////////////////
+app.post('/all', async (req, res, next) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    if (username =='username' && password=='password'){
+        const data = await Biodata.find({verified:true},{"name":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1,"phone":1,"driveimg":1}, (err, data) => {
+            if (err) {
+                res.send(err)
+            }
+            else {
+                res.send(data);
+            }
+        });
+    }
+    else {
+        res.send('invalid credintials')
+    }
+})
+//////////////////////////////////////////////
+////////////wishlist check////////////////////
+app.post('/wishlist/:phone', async (req, res, next) => {
+    var phone = req.params.phone;
+    const username = req.body.username;
+    const password = req.body.password;
+
+   await user.findOne({ username: phone }).then(data => {
+        console.log(data)
+        if (data) {
+            phone = data.phone;
+           }
+    }) 
+    if (username == 'username' && password == 'password') {
+     await user.findOne({ phone:phone }, { "wishlist":1}, (err, data) => {
+            if (err) {
+                res.send(err)
+            }
+            else {
+                if (!data) {
+                    res.send('no user found for id')
+                }
+                else {
+                    console.log(data)
+                    res.send(data);
+                }
+            } 
+        });
+    }
+    else {
+        res.send('invalid credintials')
+    }
+})
+/////////////////////////////////////////////////////////////////
+////////////////////////ACTIVATE USER////////////////////////////
+app.post('/activate/:phone', async (req, res, next) => {
+    var phone = req.params.phone;
+    const username = req.body.username;
+    const password = req.body.password;
+    if (username == 'username' && password == 'password') {
+        const updateData = await user.findOne({ }).then(async (data) => {
+            const update = data;
+            update.paid = true;
+            await data.updateOne(update);
+            res.send('updated successfully.')
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    else {
+        res.send('invalid credintials')
+    }
+})
+/////////////////////////////////////////////////////////////////////
+
+//////////////NOT VERIFIED PROFILES///////////////////////////////
+app.post('/verify', async (req, res, next) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    if (username == 'username' && password == 'password') {
+        const data = await Biodata.find({ verified: false }).then(async (data) => {
+        res.send(data)
+        }).catch((err) => {
+            res.send(err);
+        })
+        res.send('server error')
+    }
+})
+////////////////////////////////////////////////////////////////////
+
+/////////////////////////MAKE VERIFY///////////////////////////////
+app.post('/verify/:searchid', async (req, res) => {
+    const searchid = req.params.searchid;
+    const username = req.body.username;
+    const password = req.body.password;
+    if (username == 'username' && password == 'password') {
+        const updateData = await Biodata.findOne({ verified: false,search:searchid }).then(async (data) => {
+            const update = data;
+            update.verified = true;
+            await data.updateOne(update);
+            res.send('updated successfully.')
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    else {
+        res.send('invalid credintials..')
+    }})
+/////////////////////////////////////////////////////////////////////
+
+//////////////////////////PRIVATE MAKING////////////////////////////////
+app.post('/private/:searchid', async (req, res) => {
+    const searchid = req.params.searchid;
+    const username = req.body.username;
+    const password = req.body.password;
+    if (username == 'username' && password == 'password') {
+        const updateData = await Biodata.findOne({ verified: false,search:searchid }).then(async (data) => {
+            const update = data;
+            update.makemyprofile = true;
+            await data.updateOne(update);
+            res.send('made private successfully.')
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    else {
+        res.send('invalid credintials..')
+    }})
+///////////////////////////////////////////////////////////////////////
+
+///////////////DELETE ENTIRE PROFILE/////////////////////////////////////
+app.post('/delete/:searchid', testmodule.deletegfs);
+/////////////////////////////////////////////////////
+
+////////////////DELETE ONLY IMAGE///////////////////
+app.post('/deleteimg/:searchid', testmodule.deletegfsimg);
+////////////////////////////////////////////////
+
+//////////////////////UPDATE PHOTO///////////////////////////////////
+app.post('/updatephoto/:serchid',testmodule.updatePhoto)
+/////////////////////////////////////////////////////////////////////
   
 app.listen(process.env.PORT || 8080, console.log('server running on port 5000'));

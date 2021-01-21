@@ -50,7 +50,6 @@ const upload = multer({ storage }).fields([
 
 
 const createBiodata = async (req, res, next) => {
-    console.log(req.body)
     upload(req, res, async err => {
         if (err) {
             console.log(err)
@@ -78,48 +77,71 @@ const createBiodata = async (req, res, next) => {
                 district: req.body.district,
                 pincode: req.body.pincode,
                 qualifyType: req.body.qualifyType,
-                phone:req.body.phone,
-                username:req.body.username,
+                phone: req.body.phone,
+                username: req.body.username,
                 photo1: req.files.file[0].filename,
                 photo2: 'none',
                 search: "none"
             });
             var height = req.body.height
-            if (height.length==3) {
-                height=height+'0'
+            if (height.length == 3) {
+                height = height + '0'
             }
-            var search = req.body.gender.substring(0, 1) + req.body.qualifyType.substring(0, 2) + req.body.caste.substring(0, 2) + req.body.jobtype.substring(0, 1) + req.body.dob.substring(2, 4) 
-            + req.body.height.substring(0, 1) +req.body.height.substring(2, 4) +
+            var search = req.body.gender.substring(0, 1) + req.body.qualifyType.substring(0, 2) + req.body.caste.substring(0, 2) + req.body.jobtype.substring(0, 1) + req.body.dob.substring(2, 4)
+                + req.body.height.substring(0, 1) + req.body.height.substring(2, 4) +
                 req.body.surname.substring(0, 1) + req.body.name.substring(0, 2);
-                createdBiodata.search = search;
-                if ((req.files.file2)) {
-                    createdBiodata.photo2 = req.files.file2[0].filename;
-                    const getuser = await user.findOne({ username: req.body.username });
-                    if (getuser) {
-                        const update = { searchkey: search };
-                        await getuser.updateOne(update);
-                     }
-                    const result = createdBiodata.save();
-                    res.json({res:true,search:search})
+            createdBiodata.search = search;
+            if ((req.files.file2)) {
+                createdBiodata.photo2 = req.files.file2[0].filename;
+                const getuser = await user.findOne({ username: req.body.username });
+                if (getuser) {
+                    const update = { searchkey: search };
+                    await getuser.updateOne(update);
+                }
+                const result = createdBiodata.save();
+                res.json({ res: true, search: search })
             }
-                else {
-                    const result = createdBiodata.save();
-                    const getuser = await user.findOne({ username: req.body.username });
-                    if (getuser) {
-                        const update = { searchkey: search };
-                        await getuser.updateOne(update);
-                     }
+            else {
+                const result = createdBiodata.save();
+                const getuser = await user.findOne({ username: req.body.username });
+                if (getuser) {
+                    const update = { searchkey: search };
+                    await getuser.updateOne(update);
+                }
 
-                     res.json({res:true,search:search})
-                    }
+                res.json({ res: true, search: search })
+            }
         }
     })
+}
    
   
-  
-
-
-
+const updatePhoto = async (req, res, next) => {
+    console.log(req.body)
+    const searchid = req.params.searchid;
+    const username = req.body.username;
+    const password = req.body.password;
+    if (username == 'username' && password == 'password') {
+        upload(req, res, async err => {
+            if (err) {
+                console.log(err)
+            }
+            else {
+                const biodata = await Biodata.findOne({ search: searchid });
+                console.log(biodata)
+                let update = biodata;
+                update.photo1 = req.files.file[0].filename;
+                if ((req.files.file2)) {
+                    update.photo2 = req.files.file2[0].filename;
+                }
+                await biodata.updateOne(update);
+                res.json({ res: true, des: 'successfully updated' })
+            }
+        })
+    }
+    else {
+        res.send('invalid credentials')
+    }
 }
 
 const gfsrender = (req, res) => {
@@ -128,12 +150,10 @@ const gfsrender = (req, res) => {
     }
     gfs.files.findOne({ filename: req.params.key }, (err, file) => {
         //checking files
+        console.log(file)
         if (!file || file.length === 0) {
-            // return res.status(404).json({
-            //     err: 'no file exist'
-            // });
             console.log('no image found')
-            res.sendFile('noImageFound.jpg');
+            res.send('noImageFound');
         }
         else {
             if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
@@ -166,35 +186,82 @@ const resizerender = (req, res) => {
     });
 }
 
-const deletegfs = async (req,res)=>{
-    var filename = req.params.id;
-    await gfs.files.findOne({ filename: filename }, (err, file) => {
-        if (!file || file.length === 0) {
-            Biodata.deleteOne({photo1:filename},err=>{
-                if (err) {
-                res.send("photo deleted biodata not deleted");
-              }
-            })
-            res.send("no file to delete")
-        }
-        })
-   await gfs.remove({filename:filename, root:'uploads'},async(err,file)=>{
-      if(file.length===0||!file){
-        res.send("something went wrong")
-      }
-      else {
-        await Biodata.deleteOne({photo1:filename},err=>{
+const deletegfs = async (req, res) => {
+    let filename;
+    const username = req.body.username;
+    const password = req.body.password;
+    const searchid = req.params.searchid;
+    if (username == 'username' && password == 'password') {
+        await Biodata.findOne({ search: searchid }, { 'photo1': 1 }, async(err, data) => {
             if (err) {
-            res.send("photo deleted biodata not deleted");
-          }
+                res.send(err);
+            }
+            else {
+                if (data) {
+                    filename = data.photo1;
+                    await gfs.remove({ filename: filename, root: 'uploads' }, async (err, file) => {
+                        if (file.length === 0 || !file) {
+                            res.send("something went wrong")
+                        }
+                        else {
+                            await Biodata.deleteOne({ photo1: filename }, err => {
+                                if (err) {
+                                    res.send("photo deleted biodata not deleted");
+                                }
+                                else {
+                                    res.send("successfully deleted")
+                                }
+                            })
+                        }
+                    })
+                }
+                else{res.send('invalid search id')}
+   
+            }
         })
-        res.send("successfully deleted")
-      }
-    })
+        
+    }
 }
 
+const deletegfsimg = async (req, res) => {
+    let filename;
+    const username = req.body.username;
+    const password = req.body.password;
+    const searchid = req.params.searchid;
+    if (username == 'username' && password == 'password') {
+        await Biodata.findOne({ search: searchid }, { 'photo1': 1 }, async(err, data) => {
+            if (err) {
+                res.send(err);
+            }
+            else {
+                if (data) {
+                    filename = data.photo1;
+                    await gfs.remove({ filename: filename, root: 'uploads' }, async (err, file) => {
+                        console.log(file)
+                        if (!file) {
+                            res.send("no file found")
+                        }
+                        else {
+                            await Biodata.findOne({ photo1: filename },async(err,data) => {
+                                if (err) {
+                                    res.send("photo deleted not inserted dummy one");
+                                }
+                                else {
+                                    if (data) {
+                                        let updatedata = data;
+                                        updatedata.photo1 = 'nagaraj'
+                                         await  data.updateOne(updatedata);
+                                        res.send("successfully deleted")
+                                    }
+                                }
+                            })
+                        }
+                    })
+                }
+                else{res.send('invalid search id')}
+            }
+        }) 
+    }
+}
 
-    
-
-
-module.exports ={createBiodata,upload,gfsrender,deletegfs,resizerender}
+module.exports={createBiodata,upload,gfsrender,deletegfs,resizerender,deletegfsimg,updatePhoto}
