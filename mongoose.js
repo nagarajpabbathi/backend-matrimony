@@ -210,13 +210,16 @@ const gfsrender = async(req, res) => {
 }
 
 const resizerender = (req, res) => {
-     gfs.files.findOne({ filename: data.photo1 }, (err, file) => {
-                //checking files
-               // console.log(file)
-                if (!file || file.length === 0) {
-                    res.send('noImageFound');
-                }
-                else {
+    gfs.files.findOne({ filename: req.params.key }, (err, file) => {
+        //checking files
+        if (!file || file.length === 0) {
+            // return res.status(404).json({
+            //     err: 'no file exist'
+            // });
+            console.log('no image found')
+            res.sendFile('noImageFound.jpg', { root: path.join(__dirname, '../public/images') });
+        }
+        else {
             if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
                 const readstream = gfs.createReadStream(file.filename);
                 var resizeTransform = sharp().resize(200);
