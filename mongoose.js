@@ -209,15 +209,11 @@ const gfsrender = async(req, res) => {
    
 }
 
-const resizerender = (req, res) => {
-    gfs.files.findOne({ filename: req.params.key }, (err, file) => {
+const resizerender = async(req, res) => {
+    await gfs.files.findOne({ filename: req.params.key }, (err, file) => {
         //checking files
         if (!file || file.length === 0) {
-            // return res.status(404).json({
-            //     err: 'no file exist'
-            // });
-            console.log('no image found')
-            res.sendFile('noImageFound.jpg', { root: path.join(__dirname, '../public/images') });
+            res.sendFile('noImageFound.jpg');
         }
         else {
             if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
