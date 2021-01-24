@@ -229,7 +229,7 @@ app.post('/getdata/:search', async (req, res, next) => {
                     await data.updateOne({ checkdate:compareDate,todayViewed: 0 })
                 }
                 else {
-                    if (todayViewed <= 3) {
+                    if (todayViewed < 3) {
                         await data.updateOne({ todayViewed: data.todayViewed+1})
                     }
                 }
