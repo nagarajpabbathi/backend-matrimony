@@ -229,12 +229,12 @@ app.post('/getdata/:search', async (req, res, next) => {
                     await data.updateOne({ checkdate:compareDate,todayViewed: 0 })
                 }
                 else {
-                    if (todayViewed<3) {
+                    if (todayViewed<5) {
                         await data.updateOne({ todayViewed: data.todayViewed+1})
                     }
                 }
                 
-            if (todayViewed<3) {
+            if (todayViewed<5) {
                       const data = await Biodata.find({search:req.params.search}, (err, data) => {
                         if (err) {
                             res.send(err)
