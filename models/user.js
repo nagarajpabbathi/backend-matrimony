@@ -11,8 +11,8 @@ const userSchema = new mongoose.Schema({
     myaccepts: { type: Array, default: [] },
     myrejects:{type:Array,default:[]},
     searchkey: { type: String },
-    checkdate: { type: Array, default:[]},
-    todayViewed:{type:Array,default:[]}
+    checkdate: { type: Number, default:99999},
+    todayViewed:{type:Number,default:0}
 })
 
 module.exports = mongoose.model('userlist', userSchema)

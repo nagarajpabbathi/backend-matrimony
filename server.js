@@ -27,13 +27,15 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({  extended: true})); 
 
-
-
+let date = new Date();
+var compareDate=date.getMonth().toString()+date.getDate().toString()
+compareDate = Number(compareDate)
 app.get('/',(req, res) => {
     res.send('working');
 
 })
 
+      
 
 app.get('/images/:key', testmodule.gfsrender);
 
@@ -129,26 +131,48 @@ app.post('/addtowishlist', async (req, res) => {
 
 
 app.get('/limit/:username', async (req, res) => {
-    let username = req.body.username;
-    const todaylist = await user.findOne({ username: username }, (err, data) => {
-        let date = new Date();
-        let checkdate=[];
-        checkdate.push(date.getMonth());
-        checkdate.push(date.getDate());
-        console.log(checkdate);
+    let username = req.params.username;
+    const something = await user.find();
+    for (i = 0; i < something.length; i++){
+        await something[i].updateOne({ checkdate: compareDate-1, todayViewed: 3 })
+        console.log('updated',i)
+    }
+    // await user.findOne({ username:username }, async(err, data) => {
+    //     if (err) {
+    //         res.send(err);
+    //     }
+    //     else {
+    //         if (data) {
+    //             if (data.checkdate < compareDate) {
+    //                 await data.updateOne({ checkdate: compareDate, todayViewed: 0 })
+    //                 data.checkdate = compareDate;
+    //                 data.todayViewed = 0;
+    //                 res.send(data)
+    //             }
+    //             else {
+    //                 await data.updateOne({ todayViewed: data.todayViewed - 5 })
+    //                 data.todayViewed++;
+    //                 res.send(data)
+    //             }
+    //         }
+    //         else {
+    //             res.send('invalid username')
+    //         }
+    //     }
+    // }
+  //  )
         // if (data.checkdate === Date.now()) {
         //     res.json({todayViewed:data.todayViewed}) 
         // }
-        res.send(true);
-    })
+    
 })
 
 app.post("/signup", signupUser.postUsers)
 
 app.post("/signin", async (req, res,next) => {
-    const username = req.body.username||'';
+    const username = req.body.username.toLowerCase()||'';
     const password = req.body.password||'';
-    const phone = req.body.username || '';
+    const phone = req.body.username.toLowerCase() || '';
     console.log(username)
     // if (!username || username === "username")
     var temp = true;
@@ -161,7 +185,7 @@ app.post("/signin", async (req, res,next) => {
             else {
                 temp = false;
                 if (data.password == password) {
-                    res.json({ login: true,username:data.username,phone:data.phone,password:password,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||false });
+                    res.json({ login: true,username:data.username,phone:data.phone,password:password,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||false,todayViewed:data.todayViewed });
                 }
                 else {
                     res.json({ login: false,description:'Invalid password'});
@@ -200,17 +224,33 @@ app.post('/getdata/:search', async (req, res, next) => {
         else {
             console.log(data)
             if (data.password == req.body.password && data.paid) {
-                const data = await Biodata.find({search:req.params.search}, (err, data) => {
-                    if (err) {
-                        res.send(err)
+                let todayViewed = data.todayViewed;
+                if (data.checkdate < compareDate) {
+                    await data.updateOne({ checkdate:compareDate,todayViewed: 0 })
+                }
+                else {
+                    if (todayViewed <= 3) {
+                        await data.updateOne({ todayViewed: data.todayViewed+1})
                     }
-                    else {
-                        res.send(data);
-                    }
-                }); 
-            }
+                }
+                
+            if (todayViewed <= 3) {
+                      const data = await Biodata.find({search:req.params.search}, (err, data) => {
+                        if (err) {
+                            res.send(err)
+                        }
+                        else {
+                            res.send(data);
+                        }
+                    }); 
+                }  
+                else {
+                    res.send('over')
+                }
+                }
+               
             else {
-                res.send([true]);
+                res.send(true);
   
             }
         }      
@@ -315,9 +355,10 @@ app.post('/activate/:phone', async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
     if (username == 'username' && password == 'password') {
-        const updateData = await user.findOne({ }).then(async (data) => {
+        const updateData = await user.findOne({phone:phone }).then(async (data) => {
             const update = data;
             update.paid = true;
+            console.log(update);
             await data.updateOne(update);
             res.send('updated successfully.')
         }).catch((err) => {
@@ -419,12 +460,14 @@ app.post('/getbiodata/:searchid',async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const searchid = req.params.searchid;
+    console.log(searchid);
     if (username == 'username' && password == 'password') {
-        await Biodata.findOne({search:searchid}, (err, data) => {
+        await Biodata.findOne({search :searchid}, (err, data) => {
             if (err) {
                 res.send('try again something went wrong');
             }
             else {
+                console.log(data)
                 if (data) {
                     res.send(data);
                 }
@@ -466,5 +509,6 @@ app.post('/driveadd/:searchid',async (req, res) => {
       })
     }
 })
+
   
 app.listen(process.env.PORT || 8080, console.log('server running on port 5000'));

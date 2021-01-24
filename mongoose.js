@@ -165,26 +165,48 @@ const updatePhoto = async (req, res, next) => {
   
 }
 
-const gfsrender = (req, res) => {
+const gfsrender = async(req, res) => {
     if (req.params.key == 'aldjl') {
         res.send(true)
     }
-    gfs.files.findOne({ filename: req.params.key }, (err, file) => {
-        //checking files
-        console.log(file)
-        if (!file || file.length === 0) {
-            console.log('no image found')
-            res.send('noImageFound');
+    Biodata.findOne({ search: req.params.key }).then((data) => {
+        if (data) {
+            gfs.files.findOne({ filename: data.photo1 }, (err, file) => {
+                //checking files
+               // console.log(file)
+                if (!file || file.length === 0) {
+                    res.send('noImageFound');
+                }
+                else {
+                    if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
+                        const readstream = gfs.createReadStream(file.filename);
+                        var resizeTransform = sharp().resize(500);
+                        readstream.pipe(resizeTransform).pipe(res);
+                        //readstream.pipe(res);
+                    }
+                }
+            });
         }
         else {
-            if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
-                const readstream = gfs.createReadStream(file.filename);
-                var resizeTransform = sharp().resize(500);
-                readstream.pipe(resizeTransform).pipe(res);
-                //readstream.pipe(res);
-            }
+            gfs.files.findOne({ filename: req.params.key }, (err, file) => {
+                //checking files
+                console.log(file)
+                if (!file || file.length === 0) {
+                    console.log('no image found')
+                    res.send('noImageFound');
+                }
+                else {
+                    if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
+                        const readstream = gfs.createReadStream(file.filename);
+                        var resizeTransform = sharp().resize(500);
+                        readstream.pipe(resizeTransform).pipe(res);
+                        //readstream.pipe(res);
+                    }
+                }
+            });
         }
-    });
+    })
+   
 }
 
 const resizerender = (req, res) => {

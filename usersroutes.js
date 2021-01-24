@@ -1,10 +1,13 @@
 const user = require('./models/user')
 
 
-const postUsers = (req,res,next) => {
+const postUsers = (req, res, next) => {
+    let phone = req.body.phone;
+    let username = req.body.username;
+  
     const createdUser = new user({
-        phone: req.body.phone,
-        username: req.body.username,
+        phone: phone,
+        username: username.toLowerCase(),
         password: req.body.password,
        // paid:req.body.paid,
         wishlist:[]
