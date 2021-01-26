@@ -234,7 +234,7 @@ app.post('/getdata/:search', async (req, res, next) => {
                     }
                 }
                 
-            if (todayViewed<5) {
+            if (todayViewed<5||'checking'==req.body.username) {
                       const data = await Biodata.find({search:req.params.search}, (err, data) => {
                         if (err) {
                             res.send(err)
