@@ -210,7 +210,7 @@ const gfsrender = async(req, res) => {
 }
 
 const resizerender = async(req, res) => {
-    await gfs.files.findOne({ filename: req.params.key }, (err, file) => {
+    await gfs.files.findOne({ filename: req.params.key }, async(err, file) => {
         //checking files
         if (!file || file.length === 0) {
             res.sendFile('noImageFound.jpg');
@@ -218,8 +218,11 @@ const resizerender = async(req, res) => {
         else {
             if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
                 const readstream = gfs.createReadStream(file.filename);
-                var resizeTransform = sharp().resize(200);
+                var resizeTransform =sharp().resize(200);
                 readstream.pipe(resizeTransform).pipe(res);
+            }
+            else {
+                res.send('not an image')
             }
         }
     });
