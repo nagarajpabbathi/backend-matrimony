@@ -130,40 +130,29 @@ app.post('/addtowishlist', async (req, res) => {
 })
 
 
-app.get('/limit/:username', async (req, res) => {
+app.post('/limit/:username', async (req, res) => {
     let username = req.params.username;
-    const something = await user.find();
-    for (i = 0; i < something.length; i++){
-        await something[i].updateOne({ checkdate: compareDate-1, todayViewed: 3 })
-        console.log('updated',i)
+    await user.findOne({ username:username }, async(err, data) => {
+        if (err) {
+            res.send(err);
+        }
+        else {
+            if (data) {
+                if (data.checkdate < compareDate) {
+                    await data.updateOne({ checkdate: compareDate, todayViewed: 0 })
+                    res.json({todayViewed:0})
+                }
+                else {
+                    res.json({todayViewed:data.todayViewed})
+                }
+            }
+            else {
+                res.send('invalid username')
+            }
+        }
     }
-    // await user.findOne({ username:username }, async(err, data) => {
-    //     if (err) {
-    //         res.send(err);
-    //     }
-    //     else {
-    //         if (data) {
-    //             if (data.checkdate < compareDate) {
-    //                 await data.updateOne({ checkdate: compareDate, todayViewed: 0 })
-    //                 data.checkdate = compareDate;
-    //                 data.todayViewed = 0;
-    //                 res.send(data)
-    //             }
-    //             else {
-    //                 await data.updateOne({ todayViewed: data.todayViewed - 5 })
-    //                 data.todayViewed++;
-    //                 res.send(data)
-    //             }
-    //         }
-    //         else {
-    //             res.send('invalid username')
-    //         }
-    //     }
-    // }
-  //  )
-        // if (data.checkdate === Date.now()) {
-        //     res.json({todayViewed:data.todayViewed}) 
-        // }
+   )
+        
     
 })
 
