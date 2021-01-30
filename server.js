@@ -373,12 +373,13 @@ app.post('/notverified', async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
     if (username == 'username' && password == 'password') {
-        const data = await Biodata.find({ verified: false }).then(async (data) => {
-        res.send(data)
+        const data = await Biodata.find({ verified: false })
+        .then(async (data) => {
+        res.json(data)
         }).catch((err) => {
-            res.send(err);
+            res.json(err);
         })
-        res.send('server error')
+        res.json('server error')
     }
 })
 ////////////////////////////////////////////////////////////////////
