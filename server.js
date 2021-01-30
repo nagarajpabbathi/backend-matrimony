@@ -346,12 +346,20 @@ app.post('/activate/:phone', async (req, res, next) => {
     if (username == 'username' && password == 'password') {
         const updateData = await user.findOne({phone:phone }).then(async (data) => {
             const update = data;
-            update.paid = true;
-            console.log(update);
-            await data.updateOne(update);
-            res.send('updated successfully.')
+            if (!data.paid) {
+                update.paid = true;
+                console.log(update);
+                await data.updateOne(update);
+                res.send('updated successfully.')   
+            }
+            else {
+                res.send('already paid user')   
+            }
+           
         }).catch((err) => {
             console.log(err);
+            res.send('error try again..')   
+
         })
     }
     else {
