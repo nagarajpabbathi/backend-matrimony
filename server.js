@@ -353,7 +353,7 @@ app.post('/activate/:phone', async (req, res, next) => {
                 res.json('updated successfully.')   
             }
             else {
-                res.js0n('already paid user')   
+                res.json('already paid user')   
             }
            
         }).catch((err) => {
