@@ -350,20 +350,20 @@ app.post('/activate/:phone', async (req, res, next) => {
                 update.paid = true;
                 console.log(update);
                 await data.updateOne(update);
-                res.send('updated successfully.')   
+                res.json('updated successfully.')   
             }
             else {
-                res.send('already paid user')   
+                res.js0n('already paid user')   
             }
            
         }).catch((err) => {
             console.log(err);
-            res.send('error try again..')   
+            res.json('error try again..')   
 
         })
     }
     else {
-        res.send('invalid credintials')
+        res.json('invalid credintials')
     }
 })
 /////////////////////////////////////////////////////////////////////
