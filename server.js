@@ -206,6 +206,10 @@ app.post('/getdata', testmodule.createBiodata);
 app.post('/getdata/:search', async (req, res, next) => {
     ///checking user paid or not
     //console.log(req.body)
+    var secure = {};
+    if (req.body.username == 'checking') {
+        secure ={'phone':0,'surname':0}
+    }
     const userslist = await user.findOne({ username:req.body.username},{} ,async(err, data) => {
         if (err || !data || data.length <= 0) {
             res.json({ paid: false });
@@ -215,16 +219,25 @@ app.post('/getdata/:search', async (req, res, next) => {
             if (data.password == req.body.password && data.paid) {
                 let todayViewed = data.todayViewed;
                 if (data.checkdate < compareDate) {
-                    await data.updateOne({ checkdate:compareDate,todayViewed: 0 })
+                    if (req.body.username == 'checking') {
+                        
+                    }
+                    else {
+                        await data.updateOne({ checkdate:compareDate,todayViewed: 0 })
+                    }
                 }
                 else {
-                    if (todayViewed<5) {
-                        await data.updateOne({ todayViewed: data.todayViewed+1})
+                    if (todayViewed < 5) {
+                        if (req.body.username == 'checking') {
+                        }
+                        else {
+                            await data.updateOne({ todayViewed: data.todayViewed+1})
+                        }
                     }
                 }
                 
             if (todayViewed<5) {
-                      const data = await Biodata.find({search:req.params.search},{'phone':0,'surname':0}, (err, data) => {
+                      const data = await Biodata.find({search:req.params.search},secure, (err, data) => {
                         if (err) {
                             res.send(err)
                         }
