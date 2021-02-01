@@ -34,8 +34,15 @@ app.get('/',(req, res) => {
     res.send('working');
 
 })
+console.log(compareDate,'date');
+// app.get('/modify',async (req, res) => {
+//     const data =await user.find({  })
+//     for (let i = 0; i < data.length; i++){
+//         await data[i].updateOne({ checkdate: 0 })
+//         console.log(true);
+//     }
+// } );
 
-      
 
 app.get('/images/:key', testmodule.gfsrender);
 
@@ -165,11 +172,27 @@ app.post("/signin", async (req, res,next) => {
     console.log(username)
     // if (!username || username === "username")
     var temp = true;
-        const userslist = await user.findOne({ phone: phone }, (err, data) => {
+        const userslist = await user.findOne({ phone: phone }, async(err, data) => {
             console.log(data)
+            if (err) {
+                temp = false;
+                res.json({desc:'try after sometime..'})
+            }
+            if (!data) {
+                userslist = await user.findOne({ username: username }, (err, data) => {
+                    if (err || !data || data.length <= 0) {
+                        res.json({ login: false,description:"Username not exists.." });
+                }
+                else {
+                    if (data.password == password) {
+                        res.json({ login: true,username:data.username,password:password,phone:data.phone,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||false,todayViewed:data.todayViewed  });
+                        }
+                        else {
+                            res.json({ login: false,description:'Invalid password..'});
         
-            if (err||!data||data.length<=0) {
-               // res.json({ login: false,description:"Phone no not exists.."  })
+                        }
+                }
+            })
             }
             else {
                 temp = false;
@@ -184,20 +207,7 @@ app.post("/signin", async (req, res,next) => {
         })
     
    // else {
-       temp&&( userslist = await user.findOne({ username: username }, (err, data) => {
-            if (err || !data || data.length <= 0) {
-                res.json({ login: false,description:"Username not exists.." });
-        }
-        else {
-            if (data.password == password) {
-                res.json({ login: true,username:data.username,password:password,phone:data.phone,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||false  });
-                }
-                else {
-                    res.json({ login: false,description:'Invalid password..'});
 
-                }
-        }
-    }))
   // }
 })
 

@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     myaccepts: { type: Array, default: [] },
     myrejects:{type:Array,default:[]},
     searchkey: { type: String },
-    checkdate: { type: Number, default:99999},
+    checkdate: { type: Number, default:0},
     todayViewed:{type:Number,default:0}
 })
 
