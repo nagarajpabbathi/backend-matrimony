@@ -6,7 +6,8 @@ const GridFsStorage = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
 const Biodata = require('./models/biodata');
 const sharp = require('sharp');
-const user = require('./models/user')
+const user = require('./models/user');
+const { RSA_NO_PADDING } = require('constants');
 
 
 
@@ -87,9 +88,16 @@ const createBiodata = async (req, res, next) => {
             if (height.length == 3) {
                 height = height + '0'
             }
-            var search = req.body.gender.substring(0, 1) + req.body.qualifyType.substring(0, 2) + req.body.caste.substring(0, 2) + req.body.jobtype.substring(0, 1) + req.body.dob.substring(2, 4)
-                + req.body.height.substring(0, 1) + req.body.height.substring(2, 4) +
-                req.body.surname.substring(0, 1) + req.body.name.substring(0, 2);
+            var search = req.body.gender.substring(0, 1) +    //1
+                req.body.qualifyType.substring(0,3) +        //2-4
+                req.body.caste.substring(0, 2) +              //5-6
+                req.body.jobtype.substring(0, 1) +            //7
+                req.body.dob.substring(2, 4) +                //8-9
+                req.body.height.substring(0, 1) +
+                req.body.height.substring(2, 4) +             //10-11-12
+                req.body.surname.substring(0, 1) +            //13
+                req.body.name.substring(0, 2);
+            search = search.toLowerCase();            //14-15
             createdBiodata.search = search;
             if ((req.files.file2)) {
                 createdBiodata.photo2 = req.files.file2[0].filename;
@@ -180,9 +188,13 @@ const gfsrender = async(req, res) => {
                 else {
                     if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
                         const readstream = gfs.createReadStream(file.filename);
+                        console.log(file)
                         var resizeTransform = sharp().resize(500);
                         readstream.pipe(resizeTransform).pipe(res);
                         //readstream.pipe(res);
+                    }
+                    else {
+                        res.send('invalid image')
                     }
                 }
             });
@@ -190,21 +202,35 @@ const gfsrender = async(req, res) => {
         else {
             gfs.files.findOne({ filename: req.params.key }, (err, file) => {
                 //checking files
-                console.log(file)
                 if (!file || file.length === 0) {
                     console.log('no image found')
                     res.send('noImageFound');
                 }
                 else {
                     if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
-                        const readstream = gfs.createReadStream(file.filename);
+                        const readstream = gfs.createReadStream(file.filename);               
+                        var bufferArray = [];
+                        // readstream.on('data',function(chunk){  
+                        //     bufferArray.push(chunk);
+                        // });
+                        // readstream.on('end',function(){
+                        //     var buffer = Buffer.concat(bufferArray);
+                        //     console.log(buffer)
+                        //     res.send(buffer)
+                        // })
+
                         var resizeTransform = sharp().resize(500);
                         readstream.pipe(resizeTransform).pipe(res);
                         //readstream.pipe(res);
                     }
+                    else {
+                        res.send('invalid image')
+                    }
                 }
             });
         }
+    }).catch(() => {
+        res.send('something went wrong');
     })
    
 }

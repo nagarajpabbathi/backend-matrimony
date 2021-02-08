@@ -13,6 +13,7 @@ const token = "nagarajpabbathi";
 const razor= require('./models/razor');
 const { json } = require('body-parser');
 const { update } = require('./models/user');
+const biodata = require('./models/biodata');
 
 const razorpay = new Razorpay({
     key_id: 'rzp_live_r8t2KbUTPTN0OU',
@@ -35,13 +36,45 @@ app.get('/',(req, res) => {
 
 })
 console.log(compareDate,'date');
-// app.get('/modify',async (req, res) => {
-//     const data =await user.find({  })
-//     for (let i = 0; i < data.length; i++){
-//         await data[i].updateOne({ checkdate: 0 })
-//         console.log(true);
-//     }
-// } );
+app.get('/modify', async (req, res) => {
+    
+    const data = await biodata.find({})
+    for (let i = 0; i < data.length; i++){
+        if(data[i].gender)
+        var gender =data[i].gender.substring(0, 1);
+        else gender ='0'
+        
+        if(data[i].qualifyType)
+        var qualifyType = data[i].qualifyType.substring(0,3)
+        else qualifyType ='000'
+
+        if(data[i].caste)
+        var caste =data[i].caste.substring(0,2)
+        else caste="00"
+
+        if(data[i].jobType)
+        var jobtype=data[i].jobType.substring(0,1)
+        else jobtype="0"
+
+        var dob =data[i].dob.substring(2, 4)||"00"
+        var height = data[i].height.substring(0, 1)||"0"
+        height=height+data[i].height.substring(2, 4)||"00"
+        var surname=data[i].surname.substring(0, 1)||"0"
+        var name = data[i].name.substring(0, 2)||"00"
+        var search = gender +    //0
+        qualifyType+        //1-3
+        caste+              //4-5
+        jobtype +            //6
+        dob +                //7-8
+       height +              //9-10-11
+       surname +            //12
+       name;                 //13-14
+        search = search.toLowerCase();  
+        await data[i].updateOne({ search:search})
+        console.log(true,search);
+    }
+    res.send(true)
+} );
 
 
 app.get('/images/:key', testmodule.gfsrender);
