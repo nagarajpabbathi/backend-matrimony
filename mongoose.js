@@ -89,7 +89,7 @@ const createBiodata = async (req, res, next) => {
                 height = height + '0'
             }
             var search = req.body.gender.substring(0, 1) +    //1
-                req.body.qualifyType.substring(0,3) +        //2-4
+                req.body.qualifyType.substring(0, 3) +        //2-4
                 req.body.caste.substring(0, 2) +              //5-6
                 req.body.jobtype.substring(0, 1) +            //7
                 req.body.dob.substring(2, 4) +                //8-9
