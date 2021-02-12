@@ -295,7 +295,7 @@ app.post('/getdata/:search', async (req, res, next) => {
                 }
                
             else {
-                res.send(true);
+                res.send(false);
   
             }
         }      
