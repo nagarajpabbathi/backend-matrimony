@@ -85,7 +85,7 @@ app.get('/imagesmall/:key', testmodule.resizerender);
 
 app.get('/getdata/:searchid', async (req, res, next) => {
     let searchid = req.params.searchid;
-    const data = await Biodata.findOne({ search: searchid }, { "name": 1, "qualify": 1, "dob": 1, "district": 1, "photo1": 1, "search": 1, "caste": 1,"searchid":1 }, (err, data) => {
+    const data = await Biodata.findOne({ search: searchid }, { "name": 1, "qualify": 1, "dob": 1, "district": 1, "photo1": 1,"photo":1, "search": 1, "caste": 1,"searchid":1 }, (err, data) => {
         console.log(data);
         if (err) {
             res.send({data:false})
@@ -245,6 +245,18 @@ app.post("/signin", async (req, res,next) => {
 })
 
 app.post('/getdata', testmodule.createBiodata);
+app.post('/test', testmodule.createBiodata);
+// app.get('/sendaws', testmodule.sendaws);
+// app.get('/photo', (req, res) => {
+//     biodata.find({}, { "photo": 1 }, (err, data) => {
+//         var search=[];
+//         for (let i = 0; i < data.length; i++){
+//             search[i] = data[i].photo;
+//         }
+//         console.log(search)
+//         res.send(data);
+//     })
+// })
 
 app.post('/getdata/:search', async (req, res, next) => {
     ///checking user paid or not

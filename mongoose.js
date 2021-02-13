@@ -8,42 +8,24 @@ const Biodata = require('./models/biodata');
 const sharp = require('sharp');
 const user = require('./models/user');
 const { RSA_NO_PADDING } = require('constants');
+var AWS = require('aws-sdk');
+const biodata = require('./models/biodata');
 
-
-
-
+const s3 = new AWS.S3({
+    accessKeyId: 'AKIAIFBROWSLNHDB7SSA',
+    secretAccessKey : '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'
+})
 
 const mongoURI ='mongodb+srv://nagarajpabbathi:Pabbathi123@testing.nej1j.mongodb.net/nagaraju?retryWrites=true&w=majority' ;
 // create mongo connection
 const conn = mongoose.createConnection(mongoURI,{ useNewUrlParser: true, useUnifiedTopology: true});
 
-//Init gfs
-let gfs;
-//initialize stream
-conn.once('open', () => {
-    gfs = Grid(conn.db, mongoose.mongo);
-    gfs.collection('uploads');
-});
-
-// create storage engine
-const storage = new GridFsStorage({
-    url: mongoURI,
-    file: (req, file) => {
-        return new Promise((resolve, reject) => {
-            crypto.randomBytes(16, (err, buf) => {
-                if (err) {
-                    return reject(err);
-                }
-                const filename = buf.toString('hex') + path.extname(file.originalname);
-                const fileInfo = {
-                    filename: filename,
-                    bucketName: 'uploads'
-                };
-                resolve(fileInfo);
-            });
-        });
+const storage = multer.memoryStorage({
+    destination: function (req, files, callback) {
+        callback(null, '')
     }
-});
+})
+
 const upload = multer({ storage }).fields([
     { name: 'file' },
     {name:'file2'}
@@ -51,11 +33,31 @@ const upload = multer({ storage }).fields([
 
 
 const createBiodata = async (req, res, next) => {
+    var photo;
+    var photo2;
     upload(req, res, async err => {
+        var filename = Math.random().toString().substr(2, 5) + req.files.file[0].originalname;
         if (err) {
             console.log(err)
+            res.send(false);
         }
         else {
+            console.log(req.files)
+            console.log(filename,'filename')
+            const params = {
+                Bucket: 'my-backend-images',
+                Key: filename,
+                Body: req.files.file[0].buffer
+            }
+            await s3.upload(params, async (err, datas3) => {
+                if (err) {
+                    console.log(err);
+                    res.send(false)
+                }
+                else {
+                    photo = datas3.Location;
+                    console.log(photo)
+        
             const createdBiodata = new Biodata({
                 name: req.body.name,
                 surname: req.body.surname,
@@ -80,8 +82,9 @@ const createBiodata = async (req, res, next) => {
                 qualifyType: req.body.qualifyType,
                 phone: req.body.phone,
                 username: req.body.username,
-                photo1: req.files.file[0].filename,
+                photo1: 'none',
                 photo2: 'none',
+                photo : photo,
                 search: "none"
             });
             var height = req.body.height
@@ -99,26 +102,17 @@ const createBiodata = async (req, res, next) => {
                 req.body.name.substring(0, 2);
             search = search.toLowerCase();            //14-15
             createdBiodata.search = search;
-            if ((req.files.file2)) {
-                createdBiodata.photo2 = req.files.file2[0].filename;
-                const getuser = await user.findOne({ username: req.body.username });
-                if (getuser) {
-                    const update = { searchkey: search };
-                    await getuser.updateOne(update);
-                }
-                const result = createdBiodata.save();
-                res.json({ res: true, search: search })
-            }
-            else {
                 const result = createdBiodata.save();
                 const getuser = await user.findOne({ username: req.body.username });
                 if (getuser) {
                     const update = { searchkey: search };
                     await getuser.updateOne(update);
+                    }
+                    res.json({ res: true, search: search })  
                 }
 
-                res.json({ res: true, search: search })
-            }
+
+            })    
         }
     })
 }
@@ -209,18 +203,8 @@ const gfsrender = async(req, res) => {
                 else {
                     if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
                         const readstream = gfs.createReadStream(file.filename);               
-                        var bufferArray = [];
-                        // readstream.on('data',function(chunk){  
-                        //     bufferArray.push(chunk);
-                        // });
-                        // readstream.on('end',function(){
-                        //     var buffer = Buffer.concat(bufferArray);
-                        //     console.log(buffer)
-                        //     res.send(buffer)
-                        // })
-
                         var resizeTransform = sharp().resize(500);
-                        readstream.pipe(resizeTransform).pipe(res);
+                         readstream.pipe(resizeTransform).pipe(res);
                         //readstream.pipe(res);
                     }
                     else {
@@ -228,6 +212,79 @@ const gfsrender = async(req, res) => {
                     }
                 }
             });
+        }
+    }).catch(() => {
+        res.send('something went wrong');
+    })
+   
+}
+
+const sendaws = async(req, res) => {
+  
+    Biodata.find({ },{'photo1':1,'photo':1}).then(async(data) => {
+        if (data) {
+            console.log(data)
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].photo) {
+                }
+                else {
+                    console.log(data[i].photo1,' filename')
+                gfs.files.findOne({ filename: data[i].photo1 }, (err, file) => {
+                    //checking files
+                    if (!file || file.length === 0) {
+                        console.log('no image found')
+                    }
+                    else {
+                        if ((file.contentType === 'image/jpeg') || (file.contentType === 'image/png') || (file.contentType === 'image/jpg') || (file.contentType === 'image/JPEG')) {
+                            const readstream = gfs.createReadStream(file.filename);
+                            var bufferArray = [];
+                            var buffer;
+                            //////////////////////////////
+                            readstream.on('data', function (chunk) {
+                                bufferArray.push(chunk);
+                            });
+                    
+                            readstream.on('end', async function () {
+                                buffer = Buffer.concat(bufferArray);
+                                console.log(buffer)
+                                const params = {
+                                    Bucket: 'my-backend-images',
+                                    Key: file.filename,
+                                    Body: buffer
+                                }
+                                await s3.upload(params, async (err, datas3) => {
+                                    if (err) {
+                                        console.log(err, i)
+                                    }
+                                    else {
+                                        //res.send(data)
+                                        console.log(datas3)
+                                        biodata.findOne({ photo1: data[i].photo1 }, async (err, databd) => {
+                                            if (err) {
+                                                console.log('error in updating photo url')
+                                            }
+                                            else {
+                                                if (databd) {
+                                                    await databd.updateOne({ photo: datas3.Location });
+                                                    console.log(i, 'updated')
+
+                                                }
+                                            }
+                                        })
+                                    }
+                                })
+                            })
+                        }
+                        else {
+                            res.send('invalid image')
+                        }
+                    }
+                });
+            }
+        }
+        }
+        else {
+           console.log('no photo1 array get')
         }
     }).catch(() => {
         res.send('something went wrong');
@@ -267,21 +324,31 @@ const deletegfs = async (req, res) => {
             else {
                 if (data) {
                     filename = data.photo1;
-                    await gfs.remove({ filename: filename, root: 'uploads' }, async (err, file) => {
-                        if (file.length === 0 || !file) {
-                            res.send("something went wrong")
-                        }
-                        else {
-                            await Biodata.deleteOne({ photo1: filename }, err => {
-                                if (err) {
-                                    res.send("photo deleted biodata not deleted");
-                                }
-                                else {
-                                    res.send("successfully deleted")
-                                }
-                            })
-                        }
-                    })
+                    // await gfs.remove({ filename: filename, root: 'uploads' }, async (err, file) => {
+                    //     if (file.length === 0 || !file) {
+                    //         res.send("something went wrong")
+                    //     }
+                    //     else {
+                    //         await Biodata.deleteOne({ photo1: filename }, err => {
+                    //             if (err) {
+                    //                 res.send("photo deleted biodata not deleted");
+                    //             }
+                    //             else {
+                    //                 res.send("successfully deleted")
+                    //             }
+                    //         })
+                    //     }
+                    // })
+
+
+                    await Biodata.deleteOne({ photo1: filename }, err => {
+                                    if (err) {
+                                        res.send(false);
+                                    }
+                                    else {
+                                        res.send("successfully deleted")
+                                     }
+                                })
                 }
                 else{res.send('invalid search id')}
    
@@ -350,7 +417,7 @@ const deletegfsimage = async (req, res) => {
    }
 
 module.exports = {
-    createBiodata, upload, gfsrender, deletegfs,
+    createBiodata, gfsrender,upload, deletegfs,
     resizerender, deletegfsimg, updatePhoto, deletegfsimage,
-    updateBiodata
+    updateBiodata,sendaws
 }

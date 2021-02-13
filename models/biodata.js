@@ -24,6 +24,7 @@ const biodataSchema = new mongoose.Schema({
     district: { type: String, required: true },
     pincode: { type: String, required: true },
     photo1: { type: String, required: true },
+    photo: { type: String},
     photo2: { type: String },
     driveimg: { type: String, default: false},
     driveimg2: { type: String },

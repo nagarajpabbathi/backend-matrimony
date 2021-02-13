@@ -9,6 +9,8 @@
   "author": "nagaraj Pabbathi",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.5.0",
+    "aws-sdk": "^2.843.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
