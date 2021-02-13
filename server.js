@@ -90,8 +90,11 @@ app.get('/getdata/:searchid', async (req, res, next) => {
         if (err) {
             res.send({data:false})
         }
+        if (data) {
+            res.json({data:data})
+        }
         else {
-            res.json({data:data});
+            res.json(false);
         }
     });
 })
