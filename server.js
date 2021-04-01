@@ -501,7 +501,7 @@ app.post('/verify/:searchid', async (req, res) => {
             const update = data;
             update.verified = true;
             await data.updateOne(update);
-            res.send('updated successfully.')
+            res.send(true)
         }).catch((err) => {
             console.log(err);
         })
