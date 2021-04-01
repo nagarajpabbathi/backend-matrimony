@@ -15,6 +15,7 @@ const { json } = require('body-parser');
 const { update } = require('./models/user');
 const biodata = require('./models/biodata');
 
+var _admin ='checking'
 const razorpay = new Razorpay({
     key_id: 'rzp_live_r8t2KbUTPTN0OU',
     key_secret: 'lSB2dwAoc5I1y37YJjxqd8SI'
@@ -81,8 +82,6 @@ app.get('/images/:key', testmodule.gfsrender);
 
 app.get('/imagesmall/:key', testmodule.resizerender);
 
-
-
 app.get('/getdata/:searchid', async (req, res, next) => {
     let searchid = req.params.searchid;
     const data = await Biodata.findOne({ search: searchid }, { "name": 1, "qualify": 1, "dob": 1, "district": 1, "photo1": 1,"photo":1, "search": 1, "caste": 1,"searchid":1 }, (err, data) => {
@@ -99,18 +98,23 @@ app.get('/getdata/:searchid', async (req, res, next) => {
     });
 })
 
-
 app.get('/getdata', async(req, res,next) => {
     const data = await Biodata.find({verified:true},{"name":1,"photo":1,"qualify":1,"dob":1,"district":1,"photo1":1,"search":1,"caste":1}, (err, data) => {
         if (err) {
             res.send(err)
         }
         else {
+            for (let i = 0; i < data.length; i++){
+                if (data[i].makemyprofile) {
+                   let lockedImage ='https://my-backend-images.s3.ap-south-1.amazonaws.com/IMG_20210401_060909.jpg'
+                    data[i].photo = lockedImage;
+               } 
+            }
             res.send(data);
+           
         }
     });
 })
-
 
 app.get('/searchids', async(req, res,next) => {
     const data = await Biodata.find({},{"search":1}, (err, data) => {
@@ -248,6 +252,7 @@ app.post("/signin", async (req, res,next) => {
 })
 
 app.post('/getdata', testmodule.createBiodata);
+
 app.post('/test', testmodule.createBiodata);
 // app.get('/sendaws', testmodule.sendaws);
 // app.get('/photo', (req, res) => {
@@ -265,7 +270,7 @@ app.post('/getdata/:search', async (req, res, next) => {
     ///checking user paid or not
     //console.log(req.body)
     var  secure ={'phone':0,'surname':0}
-    if (req.body.username == 'checking') {
+    if (req.body.username == _admin) {
        secure ={}
     }
     const userslist = await user.findOne({ username:req.body.username},{} ,async(err, data) => {
@@ -273,7 +278,7 @@ app.post('/getdata/:search', async (req, res, next) => {
             res.json({ paid: false });
             }
         else {
-            console.log(data)
+           // console.log(data)
             if (data.password == req.body.password && data.paid) {
                 let todayViewed = data.todayViewed;
                 if (data.checkdate < compareDate) {
@@ -300,6 +305,10 @@ app.post('/getdata/:search', async (req, res, next) => {
                             res.send(err)
                         }
                         else {
+                            if (data.makemyprofile && req.body.username != _admin) {
+                                let lockedImage ='https://my-backend-images.s3.ap-south-1.amazonaws.com/IMG_20210401_060909.jpg'
+                                data.photo = lockedImage;
+                            }
                             res.send(data);
                         }
                     }); 
