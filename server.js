@@ -517,16 +517,16 @@ app.post('/private/:searchid', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     if (username == 'username' && password == 'password') {
-        const updateData = await Biodata.findOne({ search:searchid }).then(async (data) => {
-            const update = data;
-            update.makemyprofile = true;
+        const updateData = await Biodata.findOne({ search: searchid }).then(async (data) => {
             if (!data.makemyprofile) {
+                const update = data;
+                update.makemyprofile = true;
                 await data.updateOne(update);
                 res.json({res:true})
             }
             else {
                 res.json({res:'already in private'})
-            }
+            } 
         }).catch((err) => {
             console.log(err);
             res.json({res:err})
