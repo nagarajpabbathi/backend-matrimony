@@ -520,7 +520,7 @@ app.post('/private/:searchid', async (req, res) => {
         const updateData = await Biodata.findOne({ search:searchid }).then(async (data) => {
             const update = data;
             update.makemyprofile = true;
-            if (data.makemyprofile == false) {
+            if (!data.makemyprofile) {
                 await data.updateOne(update);
                 res.json({res:true})
             }
