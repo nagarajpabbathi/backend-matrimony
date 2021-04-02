@@ -477,7 +477,7 @@ app.get('/ngetdata', async(req, res,next) => {
 })
 app.post('/profiles', async (req, res, next) => {
     if (req.body.username == 'username' && req.body.password == 'password') {
-        const data = await Biodata.find({verified:true},{"name":1,"qualify":1,"dob":1,"district":1,"photo":1,"photo1":1,"search":1,"caste":1,"phone":1}, (err, data) => {
+        const data = await Biodata.find({verified:true},{"name":1,"qualify":1,"dob":1,"district":1,"photo":1,"photo1":1,"search":1,"caste":1,"phone":1,"makemyprofile":1}, (err, data) => {
             if (err) {
                 res.send(err)
             }
