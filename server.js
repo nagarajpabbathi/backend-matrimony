@@ -522,14 +522,14 @@ app.post('/private/:searchid', async (req, res) => {
             update.makemyprofile = true;
             if (data.makemyprofile == false) {
                 await data.updateOne(update);
-                res.send(true)
+                res.json({res:true})
             }
             else {
-                res.send('already in private mode')
+                res.json({res:'already in private'})
             }
         }).catch((err) => {
             console.log(err);
-            res.send('err')
+            res.json({res:err})
         })
     }
     else {
