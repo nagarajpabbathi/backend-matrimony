@@ -482,6 +482,12 @@ app.post('/profiles', async (req, res, next) => {
                 res.send(err)
             }
             else {
+                for (let i = 0; i < data.length; i++){
+                    if (data[i].makemyprofile) {
+                       let lockedImage ='https://my-backend-images.s3.ap-south-1.amazonaws.com/IMG_20210401_060909.jpg'
+                        data[i].photo = lockedImage;
+                   } 
+                }
                 res.send(data);
             }
         });
