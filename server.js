@@ -307,12 +307,11 @@ app.post('/getdata/:search', async (req, res, next) => {
                 }
                 else{
                 let todayViewed = data.todayViewed.length;
-                if (data.checkdate < compareDate) {
+                if (data.checkdate<compareDate) {
                     if (req.body.username == 'checking') {
                         
                     }
                     else {
-
                         await data.updateOne({ checkdate: compareDate, todayViewed: [] })
                     }
                 }
