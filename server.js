@@ -307,7 +307,7 @@ app.post('/getdata/:search', async (req, res, next) => {
                 }
                 else{
                 let todayViewed = data.todayViewed.length;
-                if (data.checkdate<compareDate) {
+                if (data.checkdate!=compareDate) {
                     if (req.body.username == 'checking') {
                   
                         const datas = await Biodata.find({ search: req.params.search }, secure, (err, data) => {
