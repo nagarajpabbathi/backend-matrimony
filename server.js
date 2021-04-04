@@ -30,14 +30,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({  extended: true})); 
 
 let date = new Date();
-var compareDate=date.getMonth().toString()+date.getDate().toString()
+let month = date.getMonth().toString()
+let day = date.getDate().toString()
+if (day.length == 1) {
+    day = '0' + day;
+}
+var compareDate=month+day
 compareDate = Number(compareDate)
 app.get('/',(req, res) => {
     res.send('working');
 
 })
 console.log(compareDate,'date');
-app.get('/modify', async (req, res) => {
+app.get('/modifyklsjdlkjfdlkls', async (req, res) => {
     
     const data = await biodata.find({})
     for (let i = 0; i < data.length; i++){
@@ -75,7 +80,16 @@ app.get('/modify', async (req, res) => {
         console.log(true,search);
     }
     res.send(true)
-} );
+});
+
+app.get("/checkReset", async(req, res) => {
+    var userdetails = await user.find();
+    for (let i = 0; i < userdetails.length; i++){
+        await userdetails[i].updateOne({ checkdate: compareDate - 1 , todayViewed: []})
+        console.log(i)
+    }
+    res.send(true)
+})
 
 
 app.get('/images/:key', testmodule.gfsrender);
@@ -225,7 +239,7 @@ app.post("/signin", async (req, res,next) => {
                 }
                 else {
                     if (data.password == password) {
-                        res.json({ login: true,username:data.username,password:password,phone:data.phone,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||false,todayViewed:data.todayViewed  });
+                        res.json({ login: true,username:data.username,password:password,phone:data.phone,token:token,paid:data.paid,wishlist:data.wishlist,search:data.searchkey||"",todayViewed:data.todayViewed  });
                         }
                         else {
                             res.json({ login: false,description:'Invalid password..'});
@@ -269,6 +283,7 @@ app.post('/test', testmodule.createBiodata);
 app.post('/getdata/:search', async (req, res, next) => {
     ///checking user paid or not
     //console.log(req.body)
+    var _search = req.params.search;
     var  secure ={'phone':0,'surname':0}
     if (req.body.username == _admin) {
        secure ={}
@@ -280,43 +295,61 @@ app.post('/getdata/:search', async (req, res, next) => {
         else {
            // console.log(data)
             if (data.password == req.body.password && data.paid) {
-                let todayViewed = data.todayViewed;
+                if (_search==data.searchkey) {
+                    const datares = await Biodata.find({ search: _search }, secure, (err, data) => {
+                        if (err) {
+                            res.send(err)
+                        }
+                        else {
+                            res.send(data);
+                        }
+                    });
+                }
+                else{
+                let todayViewed = data.todayViewed.length;
                 if (data.checkdate < compareDate) {
                     if (req.body.username == 'checking') {
                         
                     }
                     else {
-                        await data.updateOne({ checkdate:compareDate,todayViewed: 0 })
+
+                        await data.updateOne({ checkdate: compareDate, todayViewed: [] })
                     }
                 }
                 else {
+                    var _data = data;
                     if (todayViewed < 5) {
                         if (req.body.username == 'checking') {
                         }
                         else {
-                            await data.updateOne({ todayViewed: data.todayViewed+1})
+                            console.log('testing')
+                            var viewedarray = _data.todayViewed;
+                            viewedarray.push(_search)
+                            await _data.updateOne({ todayViewed: viewedarray })
+
+                            const datas = await Biodata.find({ search: req.params.search }, secure, (err, data) => {
+                                if (err) {
+                                    res.send(err)
+                                }
+                                else {
+                                    if (data.makemyprofile && req.body.username != _admin) {
+                                        let lockedImage = 'https://my-backend-images.s3.ap-south-1.amazonaws.com/IMG_20210401_060909.jpg'
+                                        data.photo = lockedImage;
+                                    }
+                                    res.send(data);
+                                }
+                            });
                         }
+                       
+
                     }
+                    else {
+                        res.send('over')
+                    }              
                 }
-                
-            if (todayViewed<5) {
-                      const data = await Biodata.find({search:req.params.search},secure, (err, data) => {
-                        if (err) {
-                            res.send(err)
-                        }
-                        else {
-                            if (data.makemyprofile && req.body.username != _admin) {
-                                let lockedImage ='https://my-backend-images.s3.ap-south-1.amazonaws.com/IMG_20210401_060909.jpg'
-                                data.photo = lockedImage;
-                            }
-                            res.send(data);
-                        }
-                    }); 
-                }  
-                else {
-                    res.send('over')
-                }
-                }
+               
+            }
+         }
                
             else {
                 res.send(false);
