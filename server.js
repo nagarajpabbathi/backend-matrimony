@@ -309,35 +309,57 @@ app.post('/getdata/:search', async (req, res, next) => {
                 let todayViewed = data.todayViewed.length;
                 if (data.checkdate<compareDate) {
                     if (req.body.username == 'checking') {
-                        
+                  
+                        const datas = await Biodata.find({ search: req.params.search }, secure, (err, data) => {
+                            if (err) {
+                                res.send(err)
+                            }
+                            else {
+                                res.send(data)
+                            }
+                        });
                     }
                     else {
                         await data.updateOne({ checkdate: compareDate, todayViewed: [] })
+                        const datas = await Biodata.find({ search: req.params.search }, secure, (err, data) => {
+                            if (err) {
+                                res.send(err)
+                            }
+                            else {
+                                res.send(data)
+                            }
+                        });
                     }
                 }
                 else {
+                   
                     var _data = data;
                     if (todayViewed < 5) {
+                        var sendresponse;
+                        const datas = await Biodata.find({ search: req.params.search }, secure, (err, data) => {
+                            if (err) {
+                                res.send(err)
+                            }
+                            else {
+                                if (data.makemyprofile && req.body.username != _admin) {
+                                    let lockedImage = 'https://my-backend-images.s3.ap-south-1.amazonaws.com/IMG_20210401_060909.jpg'
+                                    data.photo = lockedImage;
+                                }
+                                sendresponse=data
+                            }
+                        });
+
                         if (req.body.username == 'checking') {
+                            console.log('is woring')
+                            res.send(sendresponse);
+
                         }
                         else {
                             console.log('testing')
                             var viewedarray = _data.todayViewed;
                             viewedarray.push(_search)
                             await _data.updateOne({ todayViewed: viewedarray })
-
-                            const datas = await Biodata.find({ search: req.params.search }, secure, (err, data) => {
-                                if (err) {
-                                    res.send(err)
-                                }
-                                else {
-                                    if (data.makemyprofile && req.body.username != _admin) {
-                                        let lockedImage = 'https://my-backend-images.s3.ap-south-1.amazonaws.com/IMG_20210401_060909.jpg'
-                                        data.photo = lockedImage;
-                                    }
-                                    res.send(data);
-                                }
-                            });
+                            res.send(sendresponse); 
                         }
                        
 
