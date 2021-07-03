@@ -334,7 +334,7 @@ app.post('/getdata/:search', async (req, res, next) => {
                 else {
                    
                     var _data = data;
-                    if (todayViewed < 5) {
+                    if (todayViewed < 11) {
                         var sendresponse;
                         const datas = await Biodata.find({ search: req.params.search }, secure, (err, data) => {
                             if (err) {
